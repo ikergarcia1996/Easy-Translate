@@ -54,26 +54,35 @@ def main(
     if tensorrt:
         import torch_tensorrt
 
+        device = "cuda"
+
+        model.to(device)
+
         traced_model = torch.jit.trace(
-            model, [torch.randn((batch_size, max_length)).to("cuda")]
+            model, [torch.randn((batch_size, max_length)).to("cuda", dtype=torch.long)]
         )
         model = torch_tensorrt.compile(
             traced_model,
-            inputs=[torch_tensorrt.Input((batch_size, max_length), dtype=dtype)],
+            inputs=[torch_tensorrt.Input((batch_size, max_length), dtype=torch.long)],
             enabled_precisions={dtype},
         )
     else:
         if torch.cuda.is_available():
-            model.to("cuda", dtype=dtype)
+            device = "cuda"
+
         else:
-            model.to("cpu", dtype=dtype)
+            device = "cpu"
             print("CUDA not available. Using CPU. This will be slow.")
+        model.to(device, dtype=dtype)
 
     with tqdm(total=total_lines, desc="Dataset translation") as pbar, open(
         output_path, "w+", encoding="utf-8"
     ) as output_file:
         with torch.no_grad():
             for batch in data_loader:
+                batch["input_ids"] = batch["input_ids"].to(device)
+                batch["attention_mask"] = batch["attention_mask"].to(device)
+
                 generated_tokens = model.generate(
                     **batch, forced_bos_token_id=lang_code_to_idx
                 )
