@@ -52,24 +52,28 @@ def main(
         raise ValueError("Precision must be 16, 32 or 64.")
 
     if tensorrt:
+        device = "cuda"
         from torch2trt import torch2trt
 
         model = torch2trt(
-            model, [torch.randn((batch_size, max_length)).to("cuda", dtype=dtype)]
+            model, [torch.randn((batch_size, max_length)).to(device, dtype=dtype)]
         )
 
     else:
         if torch.cuda.is_available():
-            model.to("cuda", dtype=dtype)
+            device = "cuda"
+
         else:
-            model.to("cpu", dtype=dtype)
+            device = "cpu"
             print("CUDA not available. Using CPU. This will be slow.")
+        model.to(device, dtype=dtype)
 
     with tqdm(total=total_lines, desc="Dataset translation") as pbar, open(
         output_path, "w+", encoding="utf-8"
     ) as output_file:
         with torch.no_grad():
             for batch in data_loader:
+                batch = batch.to(device, dtype=dtype)
                 generated_tokens = model.generate(
                     **batch, forced_bos_token_id=lang_code_to_idx
                 )
