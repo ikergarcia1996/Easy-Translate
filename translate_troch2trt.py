@@ -74,6 +74,7 @@ def main(
         with torch.no_grad():
             for batch in data_loader:
                 batch["input_ids"] = batch["input_ids"].to(device)
+                batch["attention_mask"] = batch["attention_mask"].to(device)
                 generated_tokens = model.generate(
                     **batch, forced_bos_token_id=lang_code_to_idx
                 )
