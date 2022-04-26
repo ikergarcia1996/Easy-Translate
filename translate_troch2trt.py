@@ -56,7 +56,7 @@ def main(
         from torch2trt import torch2trt
 
         model = torch2trt(
-            model, [torch.randn((batch_size, max_length)).to(device, dtype=dtype)]
+            model, [torch.randn((batch_size, max_length)).to(device, dtype=torch.long)]
         )
 
     else:
@@ -73,7 +73,7 @@ def main(
     ) as output_file:
         with torch.no_grad():
             for batch in data_loader:
-                batch["input_ids"] = batch["input_ids"].to(device, dtype=dtype)
+                batch["input_ids"] = batch["input_ids"].to(device)
                 generated_tokens = model.generate(
                     **batch, forced_bos_token_id=lang_code_to_idx
                 )
