@@ -55,8 +55,10 @@ def main(
         device = "cuda"
         from torch2trt import torch2trt
 
+        model.to(device, dtype=dtype)
+
         model = torch2trt(
-            model.to(device, dtype=dtype),
+            model,
             [torch.randn((batch_size, max_length)).to(device, dtype=torch.long)],
         )
 
