@@ -73,7 +73,7 @@ def main(
     ) as output_file:
         with torch.no_grad():
             for batch in data_loader:
-                batch = batch.to(device, dtype=dtype)
+                batch["input_ids"] = batch["input_ids"].to(device, dtype=dtype)
                 generated_tokens = model.generate(
                     **batch, forced_bos_token_id=lang_code_to_idx
                 )
