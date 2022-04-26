@@ -56,7 +56,8 @@ def main(
         from torch2trt import torch2trt
 
         model = torch2trt(
-            model, [torch.randn((batch_size, max_length)).to(device, dtype=torch.long)]
+            model.to(device, dtype=dtype),
+            [torch.randn((batch_size, max_length)).to(device, dtype=torch.long)],
         )
 
     else:
