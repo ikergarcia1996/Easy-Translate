@@ -17,16 +17,26 @@ Easy-translate is a script for translating large text files in your machine usin
 
 **M2M100** is a multilingual encoder-decoder (seq-to-seq) model trained for Many-to-Many multilingual translation introduced in this [paper](https://arxiv.org/abs/2010.11125) and first released in [this](https://github.com/pytorch/fairseq/tree/master/examples/m2m_100) repository.
 
+- [Supported languages](#supported-languages)
+- [Supported models](#supported-models)
+- [Requirements](#requirements)
+- [Translating a file](#translate-a-file)
+  - [Using single CPU/GPU](#using-a-single-cpu-gpu)
+  - [Multi-GPU](#multi-gpu)
+  - [Automatic Batch Size Finder](#automatic-batch-size-finder)
+  - [Choose precision](#choose-precision)
+- [Evaluate translations](#evaluate-translations)
+
 >The model that can directly translate between the 9,900 directions of 100 languages.
 
 Easy-Translate is built on top of 🤗HuggingFace's [Transformers](https://huggingface.co/docs/transformers/index) and 🤗HuggingFace's[Accelerate](https://huggingface.co/docs/accelerate/index) library.
 
 We currently support:
 
-* CPU / GPU / multi-GPU / TPU acceleration
-* BF16 / FP16 / FB32 precision.
-* Automatic batch size finder: Forget CUDA OOM errors. Set an initial batch size, if it doesn't fit, we will automatically adjust it.
-* Sharded Data Parallel to load huge models sharded on multiple GPUs (See: <https://huggingface.co/docs/accelerate/fsdp>).
+- CPU / GPU / multi-GPU / TPU acceleration
+- BF16 / FP16 / FB32 precision.
+- Automatic batch size finder: Forget CUDA OOM errors. Set an initial batch size, if it doesn't fit, we will automatically adjust it.
+- Sharded Data Parallel to load huge models sharded on multiple GPUs (See: <https://huggingface.co/docs/accelerate/fsdp>).
 
 >Test the 🔌 Online Demo here: <https://huggingface.co/spaces/Iker/Translate-100-languages>
 
@@ -39,13 +49,13 @@ Afrikaans, Amharic, Arabic, Asturian, Azerbaijani, Bashkir, Belarusian, Bulgaria
 
 ## Supported Models
 
-* **Facebook/m2m100_418M**: <https://huggingface.co/facebook/m2m100_418M>
+- **Facebook/m2m100_418M**: <https://huggingface.co/facebook/m2m100_418M>
 
-* **Facebook/m2m100_1.2B**: <https://huggingface.co/facebook/m2m100_1.2B>
+- **Facebook/m2m100_1.2B**: <https://huggingface.co/facebook/m2m100_1.2B>
 
-* **Facebook/m2m100_12B**: <https://huggingface.co/facebook/m2m100-12B-avg-5-ckpt>
+- **Facebook/m2m100_12B**: <https://huggingface.co/facebook/m2m100-12B-avg-5-ckpt>
 
-* Any other m2m100 model from HuggingFace's Hub: <https://huggingface.co/models?search=m2m100>
+- Any other m2m100 model from HuggingFace's Hub: <https://huggingface.co/models?search=m2m100>
 
 ## Requirements
 
@@ -69,7 +79,7 @@ Run `python translate.py -h` for more info.
 ```bash
 accelerate launch translate.py \
 --sentences_path sample_text/en.txt \
---output_path sample_text/en2es.translation.txt \
+--output_path sample_text/en2es.translation.m2m100_1.2B.txt \
 --source_lang en \
 --target_lang es \
 --model_name facebook/m2m100_1.2B
@@ -85,7 +95,7 @@ You can use the Accelerate CLI to configure the Accelerate environment (Run
 ```bash
 accelerate launch --multi_gpu --num_processes 2 --num_machines 1 translate.py \
 --sentences_path sample_text/en.txt \
---output_path sample_text/en2es.translation.txt \
+--output_path sample_text/en2es.translation.m2m100_1.2B.txt \
 --source_lang en \
 --target_lang es \
 --model_name facebook/m2m100_1.2B
@@ -104,7 +114,7 @@ Use the `--precision` flag to choose the precision of the model. You can choose 
 ```bash
 accelerate launch translate.py \
 --sentences_path sample_text/en.txt \
---output_path sample_text/en2es.translation.txt \
+--output_path sample_text/en2es.translation.m2m100_1.2B.txt \
 --source_lang en \
 --target_lang es \
 --model_name facebook/m2m100_1.2B \
@@ -113,4 +123,23 @@ accelerate launch translate.py \
 
 ## Evaluate translations
 
-Work in progress...
+To run the evaluation script you need to install [bert_score](https://github.com/Tiiiger/bert_score): `pip install bert_score`
+
+The evaluation script will calculate the following metrics:
+
+- [SacreBLEU](https://github.com/huggingface/datasets/tree/master/metrics/sacrebleu)
+- [BLEU](https://github.com/huggingface/datasets/tree/master/metrics/bleu)
+- [ROUGE](https://github.com/huggingface/datasets/tree/master/metrics/rouge)
+- [METEOR](https://github.com/huggingface/datasets/tree/master/metrics/meteor)
+- [TER](https://github.com/huggingface/datasets/tree/master/metrics/ter)
+- [BertScore](https://github.com/huggingface/datasets/tree/master/metrics/bertscore)
+
+Run the following command to evaluate the translations:
+
+```bash
+accelerate launch eval.py \
+--pred_path sample_text/es.txt \
+--gold_path sample_text/en2es.translation.m2m100_1.2B.txt 
+```
+
+If you want to save the results to a file use the `--output_path` flag.

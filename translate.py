@@ -122,6 +122,7 @@ def main(
             total=total_lines, desc="Dataset translation", leave=True, ascii=True
         ) as pbar, open(output_path, "w", encoding="utf-8") as output_file:
             with torch.no_grad():
+                first_batch = True
                 for batch in data_loader:
                     batch["input_ids"] = batch["input_ids"]
                     batch["attention_mask"] = batch["attention_mask"]
@@ -141,8 +142,11 @@ def main(
                     tgt_text = tokenizer.batch_decode(
                         generated_tokens, skip_special_tokens=True
                     )
-
-                    print("\n".join(tgt_text), file=output_file)
+                    if not first_batch:
+                        print(file=output_file)
+                    else:
+                        first_batch = False
+                    print("\n".join(tgt_text), file=output_file, end="")
 
                     pbar.update(len(tgt_text))
 
