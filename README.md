@@ -82,6 +82,7 @@ See Accelerate documentation for more information (multi-node, TPU, Sharded mode
 You can use the Accelerate CLI to configure the Accelerate environment (Run `accelerate config` in your terminal) instead of using the `--multi_gpu and --num_processes` flags.
 
 ```bash
+# Use 2 GPUs
 accelerate launch --multi_gpu --num_processes 2 --num_machines 1 translate.py \
 --sentences_path sample_text/en.txt \
 --output_path sample_text/en2es.translation.m2m100_1.2B.txt \
