@@ -13,20 +13,12 @@
     <br>
 </p>
 
-Easy-translate is a script for translating large text files in your machine using 
-the [M2M100 models](https://arxiv.org/pdf/2010.11125.pdf) from Facebook/Meta AI. 
-We also privide a [script](#evaluate-translations) for Easy-Evaluation of your translations 🥳
+Easy-translate is a script for translating large text files in your machine using the [M2M100 models](https://arxiv.org/pdf/2010.11125.pdf) from Facebook/Meta AI.  We also privide a [script](#evaluate-translations) for Easy-Evaluation of your translations 🥳
 
 
-M2M100 is a multilingual encoder-decoder (seq-to-seq) model trained for Many-to-Many multilingual translation.
-It was introduced in this [paper](https://arxiv.org/abs/2010.11125) and first released in [this](https://github.com/pytorch/fairseq/tree/master/examples/m2m_100) repository.
-The model that can directly translate between the 9,900 directions of 100 languages.
+M2M100 is a multilingual encoder-decoder (seq-to-seq) model trained for Many-to-Many multilingual translation. It was introduced in this [paper](https://arxiv.org/abs/2010.11125) and first released in [this](https://github.com/pytorch/fairseq/tree/master/examples/m2m_100) repository. The model that can directly translate between the 9,900 directions of 100 languages.
 
-Easy-Translate is built on top of 🤗HuggingFace's
-[Transformers](https://huggingface.co/docs/transformers/index) and 
-🤗HuggingFace's [Accelerate](https://huggingface.co/docs/accelerate/index) library.
-We support:
-
+Easy-Translate is built on top of 🤗HuggingFace's [Transformers](https://huggingface.co/docs/transformers/index) and 🤗HuggingFace's [Accelerate](https://huggingface.co/docs/accelerate/index) library. We support:
  * CPU / multi-CPU / GPU / multi-GPU / TPU acceleration
  * BF16 / FP16 / FP32 precision.
  * Automatic batch size finder: Forget CUDA OOM errors. Set an initial batch size, if it doesn't fit, we will automatically adjust it.
@@ -80,9 +72,7 @@ accelerate launch translate.py \
 
 #### Multi-GPU:
 See Accelerate documentation for more information (multi-node, TPU, Sharded model...): https://huggingface.co/docs/accelerate/index  
-You can use the Accelerate CLI to configure the Accelerate environment (Run 
-`accelerate config` in your terminal) instead of using the 
-`--multi_gpu and --num_processes` flags.
+You can use the Accelerate CLI to configure the Accelerate environment (Run `accelerate config` in your terminal) instead of using the `--multi_gpu and --num_processes` flags.
 
 ```bash
 accelerate launch --multi_gpu --num_processes 2 --num_machines 1 translate.py \
@@ -94,9 +84,7 @@ accelerate launch --multi_gpu --num_processes 2 --num_machines 1 translate.py \
 ```
 
 #### Automatic batch size finder:
-We will automatically find a batch size that fits in your GPU memory.
-The default initial batch size is 128 (You can set it with the `--starting_batch_size 128` flag).
-If we find an Out Of Memory error, we will automatically decrease the batch size until we find a working one.
+We will automatically find a batch size that fits in your GPU memory. The default initial batch size is 128 (You can set it with the `--starting_batch_size 128` flag). If we find an Out Of Memory error, we will automatically decrease the batch size until we find a working one.
 
 
 
