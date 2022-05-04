@@ -68,7 +68,7 @@ Run `python translate.py -h` for more info.
 ```bash
 accelerate launch translate.py \
 --sentences_path sample_text/en.txt \
---output_path sample_text/en2es.translation.txt \
+--output_path sample_text/en2es.translation.m2m100_1.2B.txt \
 --source_lang en \
 --target_lang es \
 --model_name facebook/m2m100_1.2B
@@ -83,7 +83,7 @@ You can use the Accelerate CLI to configure the Accelerate environment (Run
 ```bash
 accelerate launch --multi_gpu --num_processes 2 --num_machines 1 translate.py \
 --sentences_path sample_text/en.txt \
---output_path sample_text/en2es.translation.txt \
+--output_path sample_text/en2es.translation.m2m100_1.2B.txt \
 --source_lang en \
 --target_lang es \
 --model_name facebook/m2m100_1.2B
@@ -102,7 +102,7 @@ Use the `--precision` flag to choose the precision of the model. You can choose 
 ```bash
 accelerate launch translate.py \
 --sentences_path sample_text/en.txt \
---output_path sample_text/en2es.translation.txt \
+--output_path sample_text/en2es.translation.m2m100_1.2B.txt \
 --source_lang en \
 --target_lang es \
 --model_name facebook/m2m100_1.2B \
@@ -111,6 +111,24 @@ accelerate launch translate.py \
 
 ## Evaluate translations
 
-Work in progress...
+To run the evaluation script you need to install [bert_score](https://github.com/Tiiiger/bert_score): `pip install bert_score`
+
+The evaluation script will calculate the following metrics:
+* [SacreBLEU](https://github.com/huggingface/datasets/tree/master/metrics/sacrebleu)
+* [BLEU](https://github.com/huggingface/datasets/tree/master/metrics/bleu)
+* [ROUGE](https://github.com/huggingface/datasets/tree/master/metrics/rouge)
+* [METEOR](https://github.com/huggingface/datasets/tree/master/metrics/meteor)
+* [TER](https://github.com/huggingface/datasets/tree/master/metrics/ter)
+* [BertScore](https://github.com/huggingface/datasets/tree/master/metrics/bertscore)
+
+Run the following command to evaluate the translations:
+
+```bash
+accelerate launch eval.py \
+--pred_path sample_text/es.txt \
+--gold_path sample_text/en2es.translation.m2m100_1.2B.txt 
+```
+
+If you want to save the results to a file use the `--output_path` flag.
 
 
