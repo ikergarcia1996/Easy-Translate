@@ -13,18 +13,22 @@
     <br>
 </p>
 
-Easy-translate is a script for translating large text files in your machine using the [M2M100 models](https://arxiv.org/pdf/2010.11125.pdf) from Facebook/Meta AI.
+Easy-translate is a script for translating large text files in your machine using 
+the [M2M100 models](https://arxiv.org/pdf/2010.11125.pdf) from Facebook/Meta AI. 
+We also privide a [script](#evaluate-translations) for Easy-Evaluation of your translations 🥳
+
 
 M2M100 is a multilingual encoder-decoder (seq-to-seq) model trained for Many-to-Many multilingual translation.
 It was introduced in this [paper](https://arxiv.org/abs/2010.11125) and first released in [this](https://github.com/pytorch/fairseq/tree/master/examples/m2m_100) repository.
 The model that can directly translate between the 9,900 directions of 100 languages.
 
-Easy-Translate is built on top of 🤗HuggingFace's 
+Easy-Translate is built on top of 🤗HuggingFace's
 [Transformers](https://huggingface.co/docs/transformers/index) and 
-🤗HuggingFace's [Accelerate](https://huggingface.co/docs/accelerate/index) library. We support:
+🤗HuggingFace's [Accelerate](https://huggingface.co/docs/accelerate/index) library.
+We support:
 
- * CPU / GPU / multi-GPU / TPU acceleration
- * BF16 / FP16 / FB32 precision.
+ * CPU / multi-CPU / GPU / multi-GPU / TPU acceleration
+ * BF16 / FP16 / FP32 precision.
  * Automatic batch size finder: Forget CUDA OOM errors. Set an initial batch size, if it doesn't fit, we will automatically adjust it.
  * Sharded Data Parallel to load huge models sharded on multiple GPUs (See: https://huggingface.co/docs/accelerate/fsdp).
 
