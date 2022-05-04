@@ -103,7 +103,7 @@ accelerate launch translate.py \
 
 ## Evaluate translations
 
-To run the evaluation script you need to install [bert_score](https://github.com/Tiiiger/bert_score): `pip install bert_score`
+To run the evaluation script you need to install [bert_score](https://github.com/Tiiiger/bert_score): `pip install bert_score` and 🤗HuggingFace's [Datasets](https://huggingface.co/docs/datasets/index) model: `pip install datasets`.
 
 The evaluation script will calculate the following metrics:
 * [SacreBLEU](https://github.com/huggingface/datasets/tree/master/metrics/sacrebleu)
