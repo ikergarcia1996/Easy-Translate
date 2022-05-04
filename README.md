@@ -23,7 +23,7 @@ Easy-Translate is built on top of 🤗HuggingFace's [Transformers](https://huggi
 
 We currently support:
 
-- CPU / GPU / multi-GPU / TPU acceleration
+- CPU / multi-CPU / GPU / multi-GPU / TPU acceleration
 - BF16 / FP16 / FP32 precision.
 - Automatic batch size finder: Forget CUDA OOM errors. Set an initial batch size, if it doesn't fit, we will automatically adjust it.
 - Sharded Data Parallel to load huge models sharded on multiple GPUs (See: <https://huggingface.co/docs/accelerate/fsdp>).
