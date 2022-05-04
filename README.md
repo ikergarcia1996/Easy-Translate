@@ -19,7 +19,7 @@ Easy-translate is a script for translating large text files in your machine usin
 
 >M2M100 can directly translate between 9,900 directions of 100 languages.
 
-Easy-Translate is built on top of 🤗HuggingFace's [Transformers](https://huggingface.co/docs/transformers/index) and 🤗HuggingFace's[Accelerate](https://huggingface.co/docs/accelerate/index) library.
+Easy-Translate is built on top of 🤗HuggingFace's [Transformers](https://huggingface.co/docs/transformers/index) and 🤗HuggingFace's [Accelerate](https://huggingface.co/docs/accelerate/index) library.
 
 We currently support:
 
