@@ -123,4 +123,4 @@ accelerate launch eval.py \
 
 If you want to save the results to a file use the `--output_path` flag.
 
-
+See [sample_text/en2es.m2m100_1.2B.json](sample_text/en2es.m2m100_1.2B.json) for a sample output.
