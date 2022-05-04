@@ -190,7 +190,8 @@ if __name__ == "__main__":
         "--starting_batch_size",
         type=int,
         default=128,
-        help="Starting batch size, we will automatically reduce it if we find an OOM error.",
+        help="Starting batch size, we will automatically reduce it if we find an OOM error."
+        "If you use multiple devices, we will divide this number by the number of devices.",
     )
 
     parser.add_argument(
