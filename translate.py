@@ -64,7 +64,9 @@ def main(
     if not os.path.exists(os.path.dirname(output_path)):
         os.makedirs(os.path.dirname(output_path))
 
-    accelerator = Accelerator(mixed_precision=precision if precision != "32" else "no")
+    accelerator = Accelerator(
+        mixed_precision=precision if precision != "32" else "no", split_batches=True
+    )
 
     print("Loading tokenizer...")
     tokenizer = M2M100Tokenizer.from_pretrained(
