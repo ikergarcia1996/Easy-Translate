@@ -17,7 +17,7 @@ Easy-translate is a script for translating large text files in your machine usin
 
 **M2M100** is a multilingual encoder-decoder (seq-to-seq) model trained for Many-to-Many multilingual translation introduced in this [paper](https://arxiv.org/abs/2010.11125) and first released in [this](https://github.com/pytorch/fairseq/tree/master/examples/m2m_100) repository.
 
->M2M100 that can directly translate between 9,900 directions of 100 languages.
+>M2M100 can directly translate between 9,900 directions of 100 languages.
 
 Easy-Translate is built on top of 🤗HuggingFace's [Transformers](https://huggingface.co/docs/transformers/index) and 🤗HuggingFace's[Accelerate](https://huggingface.co/docs/accelerate/index) library.
 
