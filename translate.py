@@ -109,7 +109,7 @@ def main(
             f"Source language: {source_lang}\n"
             f"Target language: {target_lang}\n"
             f"Starting batch size: {starting_batch_size}\n"
-            f"Device: {accelerator.device}\n"
+            f"Device: {str(accelerator.device).split(':')[0]}\n"
             f"Num. Devices: {accelerator.num_processes}\n"
             f"Distributed_type: {accelerator.distributed_type}\n"
             f"Max length: {max_length}\n"
