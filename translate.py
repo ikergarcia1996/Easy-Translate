@@ -255,6 +255,7 @@ if __name__ == "__main__":
         starting_batch_size=args.starting_batch_size,
         model_name=args.model_name,
         cache_dir=args.cache_dir,
+        max_length=args.max_length,
         num_beams=args.num_beams,
         precision=args.precision,
     )
