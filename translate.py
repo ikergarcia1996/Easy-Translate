@@ -100,18 +100,23 @@ def main(
     }
 
     total_lines: int = count_lines(sentences_path)
-    print(
-        f"** We will translate {total_lines} lines. **\n"
-        f"Input file: {sentences_path}\n"
-        f"Output file: {output_path}\n"
-        f"Source language: {source_lang}\n"
-        f"Target language: {target_lang}\n"
-        f"Starting batch size: {starting_batch_size}\n"
-        f"Max length: {max_length}\n"
-        f"Num beams: {num_beams}\n"
-        f"Precision: {model.dtype}\n"
-        f"Model: {model_name}\n"
-    )
+
+    if accelerator.is_main_process:
+        print(
+            f"** We will translate {total_lines} lines. **\n"
+            f"Input file: {sentences_path}\n"
+            f"Output file: {output_path}\n"
+            f"Source language: {source_lang}\n"
+            f"Target language: {target_lang}\n"
+            f"Starting batch size: {starting_batch_size}\n"
+            f"Device: {accelerator.device}\n"
+            f"Num. Devices: {accelerator.num_processes}\n"
+            f"Distributed_type: {accelerator.distributed_type}\n"
+            f"Max length: {max_length}\n"
+            f"Num beams: {num_beams}\n"
+            f"Precision: {model.dtype}\n"
+            f"Model: {model_name}\n"
+        )
 
     @find_executable_batch_size(starting_batch_size=starting_batch_size)
     def inference(batch_size):
