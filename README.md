@@ -13,7 +13,7 @@
     <br>
 </p>
 
-Easy-translate is a script for translating large text files in your machine using the [M2M100 models](https://arxiv.org/pdf/2010.11125.pdf) from Facebook/Meta AI.  We also privide a [script](#evaluate-translations) for Easy-Evaluation of your translations 🥳
+Easy-Translate is a script for translating large text files in your machine using the [M2M100 models](https://arxiv.org/pdf/2010.11125.pdf) from Facebook/Meta AI.  We also privide a [script](#evaluate-translations) for Easy-Evaluation of your translations 🥳
 
 **M2M100** is a multilingual encoder-decoder (seq-to-seq) model trained for Many-to-Many multilingual translation introduced in this [paper](https://arxiv.org/abs/2010.11125) and first released in [this](https://github.com/pytorch/fairseq/tree/master/examples/m2m_100) repository.
 
