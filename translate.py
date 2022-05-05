@@ -68,11 +68,11 @@ def main(
         mixed_precision=precision if precision != "32" else "no", split_batches=True
     )
 
-    print("Loading tokenizer...")
+    print(f"Loading tokenizer {model_name}...")
     tokenizer = M2M100Tokenizer.from_pretrained(
         pretrained_model_name_or_path=model_name, cache_dir=cache_dir
     )
-    print("Loading model...")
+    print(f"Loading model {model_name}...")
     model = M2M100ForConditionalGeneration.from_pretrained(
         pretrained_model_name_or_path=model_name, cache_dir=cache_dir
     )
