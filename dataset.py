@@ -1,17 +1,9 @@
 from torch.utils.data import IterableDataset
 
 
-def blocks(files, size=65536):
-    while True:
-        b = files.read(size)
-        if not b:
-            break
-        yield b
-
-
 def count_lines(input_path: str) -> int:
     with open(input_path, "r", encoding="utf8") as f:
-        return sum(bl.count("\n") for bl in blocks(f))
+        return sum(1 for _ in f)
 
 
 class DatasetReader(IterableDataset):
