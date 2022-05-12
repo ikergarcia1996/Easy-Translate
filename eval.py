@@ -7,6 +7,7 @@ import torch
 import json
 import argparse
 import numpy as np
+import os
 
 
 def get_dataloader(pred_path: str, gold_path: str, batch_size: int):
@@ -100,6 +101,8 @@ def eval_files(
     result_dictionary["bert_score"] = inference()
 
     if output_path is not None:
+        if not os.path.exists(os.path.dirname(output_path)):
+            os.makedirs(os.path.dirname(output_path))
         with open(output_path, "w") as f:
             json.dump(result_dictionary, f, indent=4)
 
