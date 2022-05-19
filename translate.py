@@ -134,11 +134,17 @@ def main(
 
         model, data_loader = accelerator.prepare(model, data_loader)
 
+        samples_seen: int = 0
+
         with tqdm(
-            total=total_lines, desc="Dataset translation", leave=True, ascii=True
+            total=total_lines,
+            desc="Dataset translation",
+            leave=True,
+            ascii=True,
+            disable=(not accelerator.is_main_process),
         ) as pbar, open(output_path, "w", encoding="utf-8") as output_file:
             with torch.no_grad():
-                for batch in data_loader:
+                for step, batch in enumerate(data_loader):
                     batch["input_ids"] = batch["input_ids"]
                     batch["attention_mask"] = batch["attention_mask"]
 
@@ -157,8 +163,15 @@ def main(
                     tgt_text = tokenizer.batch_decode(
                         generated_tokens, skip_special_tokens=True
                     )
+                    if accelerator.is_main_process:
+                        if step == len(data_loader) - 1:
+                            tgt_text = tgt_text[
+                                : len(data_loader.dataset) - samples_seen
+                            ]
+                        else:
+                            samples_seen += len(tgt_text)
 
-                    print("\n".join(tgt_text), file=output_file)
+                        print("\n".join(tgt_text), file=output_file)
 
                     pbar.update(len(tgt_text))
 
