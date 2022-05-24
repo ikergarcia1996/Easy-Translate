@@ -56,11 +56,10 @@ class ParallelTextReader(IterableDataset):
         return pred, [gold]
 
     def __iter__(self):
-        with open(self.pred_path, "r", encoding="utf8") as pred_itr, open(
-            self.gold_path, "r", encoding="utf8"
-        ) as gold_itr:
-            mapped_itr = map(self.preprocess, pred_itr, gold_itr)
-            return mapped_itr
+        pred_itr = open(self.pred_path, "r", encoding="utf8")
+        gold_itr = open(self.gold_path, "r", encoding="utf8")
+        mapped_itr = map(self.preprocess, pred_itr, gold_itr)
+        return mapped_itr
 
     def __len__(self):
         return self.num_sentences
