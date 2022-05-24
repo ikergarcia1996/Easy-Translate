@@ -27,7 +27,7 @@ class DatasetReader(IterableDataset):
         )
 
     def __iter__(self):
-        file_itr = open(self.filename, "r")
+        file_itr = open(self.filename, "r", encoding="utf8")
         mapped_itr = map(self.preprocess, file_itr)
         return mapped_itr
 
@@ -56,10 +56,11 @@ class ParallelTextReader(IterableDataset):
         return pred, [gold]
 
     def __iter__(self):
-        pred_itr = open(self.pred_path, "r")
-        gold_itr = open(self.gold_path, "r")
-        mapped_itr = map(self.preprocess, pred_itr, gold_itr)
-        return mapped_itr
+        with open(self.pred_path, "r", encoding="utf8") as pred_itr, open(
+            self.gold_path, "r", encoding="utf8"
+        ) as gold_itr:
+            mapped_itr = map(self.preprocess, pred_itr, gold_itr)
+            return mapped_itr
 
     def __len__(self):
         return self.num_sentences
