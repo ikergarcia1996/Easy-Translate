@@ -120,7 +120,7 @@ def main(
 
     @find_executable_batch_size(starting_batch_size=starting_batch_size)
     def inference(batch_size):
-        nonlocal model, tokenizer, sentences_path, max_length, output_path, lang_code_to_idx, gen_kwargs, total_lines, precision
+        nonlocal model, tokenizer, sentences_path, max_length, output_path, lang_code_to_idx, gen_kwargs, precision
 
         print(f"Translating with batch size {batch_size}")
 
@@ -137,7 +137,7 @@ def main(
         samples_seen: int = 0
 
         with tqdm(
-            total=total_lines,
+            total=len(data_loader.dataset),
             desc="Dataset translation",
             leave=True,
             ascii=True,
