@@ -99,11 +99,11 @@ def main(
         "num_return_sequences": 1,
     }
 
-    total_lines: int = count_lines(sentences_path)
+    # total_lines: int = count_lines(sentences_path)
 
     if accelerator.is_main_process:
         print(
-            f"** We will translate {total_lines} lines. **\n"
+            f"** Translation **\n"
             f"Input file: {sentences_path}\n"
             f"Output file: {output_path}\n"
             f"Source language: {source_lang}\n"

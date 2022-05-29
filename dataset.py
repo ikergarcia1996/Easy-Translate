@@ -12,6 +12,8 @@ class DatasetReader(IterableDataset):
         self.tokenizer = tokenizer
         self.max_length = max_length
         self.current_line = 0
+        self.total_lines = count_lines(filename)
+        print(f"{self.total_lines} lines in {filename}")
 
     def preprocess(self, text: str):
         self.current_line += 1
@@ -30,6 +32,9 @@ class DatasetReader(IterableDataset):
         file_itr = open(self.filename, "r", encoding="utf8")
         mapped_itr = map(self.preprocess, file_itr)
         return mapped_itr
+
+    def __len__(self):
+        return self.total_lines
 
 
 class ParallelTextReader(IterableDataset):
