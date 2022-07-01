@@ -59,6 +59,7 @@ def main(
     precision: str = "32",
     max_length: int = 128,
     num_beams: int = 4,
+    num_return_sequences: int = 1,
 ):
 
     if not os.path.exists(os.path.abspath(os.path.dirname(output_path))):
@@ -96,7 +97,7 @@ def main(
     gen_kwargs = {
         "max_length": max_length,
         "num_beams": num_beams,
-        "num_return_sequences": 1,
+        "num_return_sequences": num_return_sequences,
     }
 
     # total_lines: int = count_lines(sentences_path)
@@ -247,6 +248,13 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
+        "--num_return_sequences",
+        type=int,
+        default=1,
+        help="Number of possible translation to return for each sentence (num_return_sequences<=num_beams).",
+    )
+
+    parser.add_argument(
         "--precision",
         type=str,
         default="32",
@@ -266,5 +274,6 @@ if __name__ == "__main__":
         cache_dir=args.cache_dir,
         max_length=args.max_length,
         num_beams=args.num_beams,
+        num_return_sequences=args.num_return_sequences,
         precision=args.precision,
     )
