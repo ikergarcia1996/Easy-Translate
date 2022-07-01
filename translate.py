@@ -61,8 +61,8 @@ def main(
     num_beams: int = 4,
 ):
 
-    if not os.path.exists(os.path.dirname(output_path)):
-        os.makedirs(os.path.dirname(output_path))
+    if not os.path.exists(os.path.abspath(os.path.dirname(output_path))):
+        os.makedirs(os.path.abspath(os.path.dirname(output_path)))
 
     accelerator = Accelerator(
         mixed_precision=precision if precision != "32" else "no", split_batches=True
