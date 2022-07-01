@@ -174,7 +174,7 @@ def main(
 
                         print("\n".join(tgt_text), file=output_file)
 
-                    pbar.update(len(tgt_text))
+                    pbar.update(len(tgt_text) // gen_kwargs["num_return_sequences"])
 
     inference()
     print(f"Translation done.\n")
