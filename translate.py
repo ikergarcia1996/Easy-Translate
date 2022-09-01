@@ -1,15 +1,22 @@
+import os
+import math
+import argparse
+
+import torch
+from torch.utils.data import DataLoader
+
+from tqdm import tqdm
+
 from transformers import (
     AutoModelForSeq2SeqLM,
     AutoTokenizer,
     PreTrainedTokenizerBase,
     DataCollatorForSeq2Seq,
 )
-from tqdm import tqdm
-import argparse
-import torch
-from torch.utils.data import DataLoader
+
+
 from dataset import DatasetReader, count_lines
-import os
+
 from accelerate import Accelerator, DistributedType
 from accelerate.memory_utils import find_executable_batch_size
 
@@ -183,7 +190,14 @@ def main(
                         generated_tokens, skip_special_tokens=True
                     )
                     if accelerator.is_main_process:
-                        if step == len(data_loader) - 1:
+                        if (
+                            step
+                            == math.ceil(
+                                math.ceil(total_lines / batch_size)
+                                / accelerator.num_processes
+                            )
+                            - 1
+                        ):
                             tgt_text = tgt_text[
                                 : (total_lines * num_return_sequences) - samples_seen
                             ]
