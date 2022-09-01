@@ -17,8 +17,7 @@ from transformers import (
 
 from dataset import DatasetReader, count_lines
 
-from accelerate import Accelerator, DistributedType
-from accelerate.memory_utils import find_executable_batch_size
+from accelerate import Accelerator, DistributedType, find_executable_batch_size
 
 
 def get_dataloader(
