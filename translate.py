@@ -116,7 +116,7 @@ def main(
         "top_p": top_p,
     }
 
-    # total_lines: int = count_lines(sentences_path)
+    total_lines: int = count_lines(sentences_path)
 
     if accelerator.is_main_process:
         print(
@@ -156,7 +156,7 @@ def main(
         samples_seen: int = 0
 
         with tqdm(
-            total=len(data_loader.dataset),
+            total=total_lines,
             desc="Dataset translation",
             leave=True,
             ascii=True,
@@ -185,8 +185,7 @@ def main(
                     if accelerator.is_main_process:
                         if step == len(data_loader) - 1:
                             tgt_text = tgt_text[
-                                : (len(data_loader.dataset) * num_return_sequences)
-                                - samples_seen
+                                : (total_lines * num_return_sequences) - samples_seen
                             ]
                         else:
                             samples_seen += len(tgt_text)
