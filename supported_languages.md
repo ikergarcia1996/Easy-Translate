@@ -110,207 +110,209 @@
 | Zulu | zu |
 
 ## Supported languages NLLB200
-| Language id |
-|-------------|
- | ace_Arab    | 
- | ace_Latn    | 
- | acm_Arab    | 
- | acq_Arab    | 
- | aeb_Arab    | 
- | afr_Latn    | 
- | ajp_Arab    | 
- | aka_Latn    | 
- | amh_Ethi    | 
- | apc_Arab    | 
- | arb_Arab    | 
- | ars_Arab    | 
- | ary_Arab    | 
- | arz_Arab    | 
- | asm_Beng    | 
- | ast_Latn    | 
- | awa_Deva    | 
- | ayr_Latn    | 
- | azb_Arab    | 
- | azj_Latn    | 
- | bak_Cyrl    | 
- | bam_Latn    | 
- | ban_Latn    | 
- | bel_Cyrl    | 
- | bem_Latn    | 
- | ben_Beng    | 
- | bho_Deva    | 
- | bjn_Arab    | 
- | bjn_Latn    | 
- | bod_Tibt    | 
- | bos_Latn    | 
- | bug_Latn    | 
- | bul_Cyrl    | 
- | cat_Latn    | 
- | ceb_Latn    | 
- | ces_Latn    | 
- | cjk_Latn    | 
- | ckb_Arab    | 
- | crh_Latn    | 
- | cym_Latn    | 
- | dan_Latn    | 
- | deu_Latn    | 
- | dik_Latn    | 
- | dyu_Latn    | 
- | dzo_Tibt    | 
- | ell_Grek    | 
- | eng_Latn    | 
- | epo_Latn    | 
- | est_Latn    | 
- | eus_Latn    | 
- | ewe_Latn    | 
- | fao_Latn    | 
- | pes_Arab    | 
- | fij_Latn    | 
- | fin_Latn    | 
- | fon_Latn    | 
- | fra_Latn    | 
- | fur_Latn    | 
- | fuv_Latn    | 
- | gla_Latn    | 
- | gle_Latn    | 
- | glg_Latn    | 
- | grn_Latn    | 
- | guj_Gujr    | 
- | hat_Latn    | 
- | hau_Latn    | 
- | heb_Hebr    | 
- | hin_Deva    | 
- | hne_Deva    | 
- | hrv_Latn    | 
- | hun_Latn    | 
- | hye_Armn    | 
- | ibo_Latn    | 
- | ilo_Latn    | 
- | ind_Latn    | 
- | isl_Latn    | 
- | ita_Latn    | 
- | jav_Latn    | 
- | jpn_Jpan    | 
- | kab_Latn    | 
- | kac_Latn    | 
- | kam_Latn    | 
- | kan_Knda    | 
- | kas_Arab    | 
- | kas_Deva    | 
- | kat_Geor    | 
- | knc_Arab    | 
- | knc_Latn    | 
- | kaz_Cyrl    | 
- | kbp_Latn    | 
- | kea_Latn    | 
- | khm_Khmr    | 
- | kik_Latn    | 
- | kin_Latn    | 
- | kir_Cyrl    | 
- | kmb_Latn    | 
- | kon_Latn    | 
- | kor_Hang    | 
- | kmr_Latn    | 
- | lao_Laoo    | 
- | lvs_Latn    | 
- | lij_Latn    | 
- | lim_Latn    | 
- | lin_Latn    | 
- | lit_Latn    | 
- | lmo_Latn    | 
- | ltg_Latn    | 
- | ltz_Latn    | 
- | lua_Latn    | 
- | lug_Latn    | 
- | luo_Latn    | 
- | lus_Latn    | 
- | mag_Deva    | 
- | mai_Deva    | 
- | mal_Mlym    | 
- | mar_Deva    | 
- | min_Latn    | 
- | mkd_Cyrl    | 
- | plt_Latn    | 
- | mlt_Latn    | 
- | mni_Beng    | 
- | khk_Cyrl    | 
- | mos_Latn    | 
- | mri_Latn    | 
- | zsm_Latn    | 
- | mya_Mymr    | 
- | nld_Latn    | 
- | nno_Latn    | 
- | nob_Latn    | 
- | npi_Deva    | 
- | nso_Latn    | 
- | nus_Latn    | 
- | nya_Latn    | 
- | oci_Latn    | 
- | gaz_Latn    | 
- | ory_Orya    | 
- | pag_Latn    | 
- | pan_Guru    | 
- | pap_Latn    | 
- | pol_Latn    | 
- | por_Latn    | 
- | prs_Arab    | 
- | pbt_Arab    | 
- | quy_Latn    | 
- | ron_Latn    | 
- | run_Latn    | 
- | rus_Cyrl    | 
- | sag_Latn    | 
- | san_Deva    | 
- | sat_Beng    | 
- | scn_Latn    | 
- | shn_Mymr    | 
- | sin_Sinh    | 
- | slk_Latn    | 
- | slv_Latn    | 
- | smo_Latn    | 
- | sna_Latn    | 
- | snd_Arab    | 
- | som_Latn    | 
- | sot_Latn    | 
- | spa_Latn    | 
- | als_Latn    | 
- | srd_Latn    | 
- | srp_Cyrl    | 
- | ssw_Latn    | 
- | sun_Latn    | 
- | swe_Latn    | 
- | swh_Latn    | 
- | szl_Latn    | 
- | tam_Taml    | 
- | tat_Cyrl    | 
- | tel_Telu    | 
- | tgk_Cyrl    | 
- | tgl_Latn    | 
- | tha_Thai    | 
- | tir_Ethi    | 
- | taq_Latn    | 
- | taq_Tfng    | 
- | tpi_Latn    | 
- | tsn_Latn    | 
- | tso_Latn    | 
- | tuk_Latn    | 
- | tum_Latn    | 
- | tur_Latn    | 
- | twi_Latn    | 
- | tzm_Tfng    | 
- | uig_Arab    | 
- | ukr_Cyrl    | 
- | umb_Latn    | 
- | urd_Arab    | 
- | uzn_Latn    | 
- | vec_Latn    | 
- | vie_Latn    | 
- | war_Latn    | 
- | wol_Latn    | 
- | xho_Latn    | 
- | ydd_Hebr    | 
- | yor_Latn    | 
- | yue_Hant    | 
- | zho_Hans    | 
- | zho_Hant    | 
- | zul_Latn    | 
+| Language                           | Id       |
+|------------------------------------|----------|
+| Acehnese (Arabic script)           | ace_Arab |
+| Acehnese (Latin script)            | ace_Latn |
+| Mesopotamian Arabic                | acm_Arab |
+| Ta’izzi-Adeni Arabic               | acq_Arab |
+| Tunisian Arabic                    | aeb_Arab |
+| Afrikaans                          | afr_Latn |
+| South Levantine Arabic             | ajp_Arab |
+| Akan                               | aka_Latn |
+| Amharic                            | amh_Ethi |
+| North Levantine Arabic             | apc_Arab |
+| Modern Standard Arabic             | arb_Arab |
+| Modern Standard Arabic (Romanized) | arb_Latn |
+| Najdi Arabic                       | ars_Arab |
+| Moroccan Arabic                    | ary_Arab |
+| Egyptian Arabic                    | arz_Arab |
+| Assamese                           | asm_Beng |
+| Asturian                           | ast_Latn |
+| Awadhi                             | awa_Deva |
+| Central Aymara                     | ayr_Latn |
+| South Azerbaijani                  | azb_Arab |
+| North Azerbaijani                  | azj_Latn |
+| Bashkir                            | bak_Cyrl |
+| Bambara                            | bam_Latn |
+| Balinese                           | ban_Latn |
+| Belarusian                         | bel_Cyrl |
+| Bemba                              | bem_Latn |
+| Bengali                            | ben_Beng |
+| Bhojpuri                           | bho_Deva |
+| Banjar (Arabic script)             | bjn_Arab |
+| Banjar (Latin script)              | bjn_Latn |
+| Standard Tibetan                   | bod_Tibt |
+| Bosnian                            | bos_Latn |
+| Buginese                           | bug_Latn |
+| Bulgarian                          | bul_Cyrl |
+| Catalan                            | cat_Latn |
+| Cebuano                            | ceb_Latn |
+| Czech                              | ces_Latn |
+| Chokwe                             | cjk_Latn |
+| Central Kurdish                    | ckb_Arab |
+| Crimean Tatar                      | crh_Latn |
+| Welsh                              | cym_Latn |
+| Danish                             | dan_Latn |
+| German                             | deu_Latn |
+| Southwestern Dinka                 | dik_Latn |
+| Dyula                              | dyu_Latn |
+| Dzongkha                           | dzo_Tibt |
+| Greek                              | ell_Grek |
+| English                            | eng_Latn |
+| Esperanto                          | epo_Latn |
+| Estonian                           | est_Latn |
+| Basque                             | eus_Latn |
+| Ewe                                | ewe_Latn |
+| Faroese                            | fao_Latn |
+| Fijian                             | fij_Latn |
+| Finnish                            | fin_Latn |
+| Fon                                | fon_Latn |
+| French                             | fra_Latn |
+| Friulian                           | fur_Latn |
+| Nigerian Fulfulde                  | fuv_Latn |
+| Scottish Gaelic                    | gla_Latn |
+| Irish                              | gle_Latn |
+| Galician                           | glg_Latn |
+| Guarani                            | grn_Latn |
+| Gujarati                           | guj_Gujr |
+| Haitian Creole                     | hat_Latn |
+| Hausa                              | hau_Latn |
+| Hebrew                             | heb_Hebr |
+| Hindi                              | hin_Deva |
+| Chhattisgarhi                      | hne_Deva |
+| Croatian                           | hrv_Latn |
+| Hungarian                          | hun_Latn |
+| Armenian                           | hye_Armn |
+| Igbo                               | ibo_Latn |
+| Ilocano                            | ilo_Latn |
+| Indonesian                         | ind_Latn |
+| Icelandic                          | isl_Latn |
+| Italian                            | ita_Latn |
+| Javanese                           | jav_Latn |
+| Japanese                           | jpn_Jpan |
+| Kabyle                             | kab_Latn |
+| Jingpho                            | kac_Latn |
+| Kamba                              | kam_Latn |
+| Kannada                            | kan_Knda |
+| Kashmiri (Arabic script)           | kas_Arab |
+| Kashmiri (Devanagari script)       | kas_Deva |
+| Georgian                           | kat_Geor |
+| Central Kanuri (Arabic script)     | knc_Arab |
+| Central Kanuri (Latin script)      | knc_Latn |
+| Kazakh                             | kaz_Cyrl |
+| Kabiyè                             | kbp_Latn |
+| Kabuverdianu                       | kea_Latn |
+| Khmer                              | khm_Khmr |
+| Kikuyu                             | kik_Latn |
+| Kinyarwanda                        | kin_Latn |
+| Kyrgyz                             | kir_Cyrl |
+| Kimbundu                           | kmb_Latn |
+| Northern Kurdish                   | kmr_Latn |
+| Kikongo                            | kon_Latn |
+| Korean                             | kor_Hang |
+| Lao                                | lao_Laoo |
+| Ligurian                           | lij_Latn |
+| Limburgish                         | lim_Latn |
+| Lingala                            | lin_Latn |
+| Lithuanian                         | lit_Latn |
+| Lombard                            | lmo_Latn |
+| Latgalian                          | ltg_Latn |
+| Luxembourgish                      | ltz_Latn |
+| Luba-Kasai                         | lua_Latn |
+| Ganda                              | lug_Latn |
+| Luo                                | luo_Latn |
+| Mizo                               | lus_Latn |
+| Standard Latvian                   | lvs_Latn |
+| Magahi                             | mag_Deva |
+| Maithili                           | mai_Deva |
+| Malayalam                          | mal_Mlym |
+| Marathi                            | mar_Deva |
+| Minangkabau (Arabic script)        | min_Arab |
+| Minangkabau (Latin script)         | min_Latn |
+| Macedonian                         | mkd_Cyrl |
+| Plateau Malagasy                   | plt_Latn |
+| Maltese                            | mlt_Latn |
+| Meitei (Bengali script)            | mni_Beng |
+| Halh Mongolian                     | khk_Cyrl |
+| Mossi                              | mos_Latn |
+| Maori                              | mri_Latn |
+| Burmese                            | mya_Mymr |
+| Dutch                              | nld_Latn |
+| Norwegian Nynorsk                  | nno_Latn |
+| Norwegian Bokmål                   | nob_Latn |
+| Nepali                             | npi_Deva |
+| Northern Sotho                     | nso_Latn |
+| Nuer                               | nus_Latn |
+| Nyanja                             | nya_Latn |
+| Occitan                            | oci_Latn |
+| West Central Oromo                 | gaz_Latn |
+| Odia                               | ory_Orya |
+| Pangasinan                         | pag_Latn |
+| Eastern Panjabi                    | pan_Guru |
+| Papiamento                         | pap_Latn |
+| Western Persian                    | pes_Arab |
+| Polish                             | pol_Latn |
+| Portuguese                         | por_Latn |
+| Dari                               | prs_Arab |
+| Southern Pashto                    | pbt_Arab |
+| Ayacucho Quechua                   | quy_Latn |
+| Romanian                           | ron_Latn |
+| Rundi                              | run_Latn |
+| Russian                            | rus_Cyrl |
+| Sango                              | sag_Latn |
+| Sanskrit                           | san_Deva |
+| Santali                            | sat_Olck |
+| Sicilian                           | scn_Latn |
+| Shan                               | shn_Mymr |
+| Sinhala                            | sin_Sinh |
+| Slovak                             | slk_Latn |
+| Slovenian                          | slv_Latn |
+| Samoan                             | smo_Latn |
+| Shona                              | sna_Latn |
+| Sindhi                             | snd_Arab |
+| Somali                             | som_Latn |
+| Southern Sotho                     | sot_Latn |
+| Spanish                            | spa_Latn |
+| Tosk Albanian                      | als_Latn |
+| Sardinian                          | srd_Latn |
+| Serbian                            | srp_Cyrl |
+| Swati                              | ssw_Latn |
+| Sundanese                          | sun_Latn |
+| Swedish                            | swe_Latn |
+| Swahili                            | swh_Latn |
+| Silesian                           | szl_Latn |
+| Tamil                              | tam_Taml |
+| Tatar                              | tat_Cyrl |
+| Telugu                             | tel_Telu |
+| Tajik                              | tgk_Cyrl |
+| Tagalog                            | tgl_Latn |
+| Thai                               | tha_Thai |
+| Tigrinya                           | tir_Ethi |
+| Tamasheq (Latin script)            | taq_Latn |
+| Tamasheq (Tifinagh script)         | taq_Tfng |
+| Tok Pisin                          | tpi_Latn |
+| Tswana                             | tsn_Latn |
+| Tsonga                             | tso_Latn |
+| Turkmen                            | tuk_Latn |
+| Tumbuka                            | tum_Latn |
+| Turkish                            | tur_Latn |
+| Twi                                | twi_Latn |
+| Central Atlas Tamazight            | tzm_Tfng |
+| Uyghur                             | uig_Arab |
+| Ukrainian                          | ukr_Cyrl |
+| Umbundu                            | umb_Latn |
+| Urdu                               | urd_Arab |
+| Northern Uzbek                     | uzn_Latn |
+| Venetian                           | vec_Latn |
+| Vietnamese                         | vie_Latn |
+| Waray                              | war_Latn |
+| Wolof                              | wol_Latn |
+| Xhosa                              | xho_Latn |
+| Eastern Yiddish                    | ydd_Hebr |
+| Yoruba                             | yor_Latn |
+| Yue Chinese                        | yue_Hant |
+| Chinese (Simplified)               | zho_Hans |
+| Chinese (Traditional)              | zho_Hant |
+| Standard Malay                     | zsm_Latn |
+| Zulu                               | zul_Latn |
