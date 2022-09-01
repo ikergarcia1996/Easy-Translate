@@ -71,8 +71,8 @@ def main(
 
     accelerator = Accelerator(
         mixed_precision=precision if precision != "32" else "no",
-        # split_batches=False,
-        # dispatch_batches=False,
+        split_batches=False,
+        dispatch_batches=False,
     )
 
     print(f"Loading tokenizer {model_name}...")
