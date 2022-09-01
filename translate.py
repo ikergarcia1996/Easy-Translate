@@ -45,6 +45,7 @@ def get_dataloader(
         dataset,
         batch_size=batch_size,
         collate_fn=data_collator,
+        num_workers=1,
     )
 
 
