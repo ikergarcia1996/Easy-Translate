@@ -70,7 +70,9 @@ def main(
         os.makedirs(os.path.abspath(os.path.dirname(output_path)))
 
     accelerator = Accelerator(
-        mixed_precision=precision if precision != "32" else "no", split_batches=True
+        mixed_precision=precision if precision != "32" else "no",
+        split_batches=False,
+        dispatch_batches=True,
     )
 
     print(f"Loading tokenizer {model_name}...")
@@ -182,7 +184,7 @@ def main(
                     if accelerator.is_main_process:
                         if step == len(data_loader) - 1:
                             tgt_text = tgt_text[
-                                : len(data_loader.dataset) * num_return_sequences
+                                : (len(data_loader.dataset) * num_return_sequences)
                                 - samples_seen
                             ]
                         else:
@@ -287,21 +289,21 @@ if __name__ == "__main__":
     parser.add_argument(
         "--temperature",
         type=float,
-        default=1.0,
+        default=0.8,
         help="Temperature for sampling, value used only if do_sample is True.",
     )
 
     parser.add_argument(
         "--top_k",
         type=int,
-        default=50,
+        default=100,
         help="If do_sample is True, will sample from the top k most likely tokens.",
     )
 
     parser.add_argument(
         "--top_p",
         type=float,
-        default=1.0,
+        default=0.75,
         help="If do_sample is True, will sample from the top k most likely tokens.",
     )
 
