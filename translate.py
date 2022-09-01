@@ -1,6 +1,6 @@
 from transformers import (
-    M2M100ForConditionalGeneration,
-    M2M100Tokenizer,
+    AutoModelForSeq2SeqLM,
+    AutoTokenizer,
     PreTrainedTokenizerBase,
     DataCollatorForSeq2Seq,
 )
@@ -60,6 +60,10 @@ def main(
     max_length: int = 128,
     num_beams: int = 4,
     num_return_sequences: int = 1,
+    do_sample: bool = False,
+    temperature: float = 1.0,
+    top_k: int = 50,
+    top_p: float = 1.0,
 ):
 
     if not os.path.exists(os.path.abspath(os.path.dirname(output_path))):
@@ -70,11 +74,11 @@ def main(
     )
 
     print(f"Loading tokenizer {model_name}...")
-    tokenizer = M2M100Tokenizer.from_pretrained(
+    tokenizer = AutoTokenizer.from_pretrained(
         pretrained_model_name_or_path=model_name, cache_dir=cache_dir
     )
     print(f"Loading model {model_name}...")
-    model = M2M100ForConditionalGeneration.from_pretrained(
+    model = AutoModelForSeq2SeqLM.from_pretrained(
         pretrained_model_name_or_path=model_name, cache_dir=cache_dir
     )
 
@@ -92,12 +96,21 @@ def main(
         raise ValueError("Precision not supported. Supported values: 32, fp16, bf16")
 
     tokenizer.src_lang = source_lang
-    lang_code_to_idx = tokenizer.lang_code_to_id[target_lang]
+    try:
+        lang_code_to_idx = tokenizer.lang_code_to_id[target_lang]
+    except KeyError:
+        raise KeyError(
+            f"Language {target_lang} not found in tokenizer. Available languages: {tokenizer.lang_code_to_id.keys()}"
+        )
 
     gen_kwargs = {
         "max_length": max_length,
         "num_beams": num_beams,
         "num_return_sequences": num_return_sequences,
+        "do_sample": do_sample,
+        "temperature": temperature,
+        "top_k": top_k,
+        "top_p": top_p,
     }
 
     # total_lines: int = count_lines(sentences_path)
@@ -114,10 +127,12 @@ def main(
             f"Num. Devices: {accelerator.num_processes}\n"
             f"Distributed_type: {accelerator.distributed_type}\n"
             f"Max length: {max_length}\n"
-            f"Num beams: {num_beams}\n"
             f"Precision: {model.dtype}\n"
             f"Model: {model_name}\n"
         )
+        print("** Generation parameters **")
+        print("\n".join(f"{k}: {v}" for k, v in gen_kwargs.items()))
+        print("\n")
 
     @find_executable_batch_size(starting_batch_size=starting_batch_size)
     def inference(batch_size):
@@ -167,7 +182,8 @@ def main(
                     if accelerator.is_main_process:
                         if step == len(data_loader) - 1:
                             tgt_text = tgt_text[
-                                : len(data_loader.dataset) - samples_seen
+                                : len(data_loader.dataset) * num_return_sequences
+                                - samples_seen
                             ]
                         else:
                             samples_seen += len(tgt_text)
@@ -262,6 +278,33 @@ if __name__ == "__main__":
         help="Precision of the model. bf16, fp16 or 32.",
     )
 
+    parser.add_argument(
+        "--do_sample",
+        action="store_true",
+        help="Use sampling instead of beam search.",
+    )
+
+    parser.add_argument(
+        "--temperature",
+        type=float,
+        default=1.0,
+        help="Temperature for sampling, value used only if do_sample is True.",
+    )
+
+    parser.add_argument(
+        "--top_k",
+        type=int,
+        default=50,
+        help="If do_sample is True, will sample from the top k most likely tokens.",
+    )
+
+    parser.add_argument(
+        "--top_p",
+        type=float,
+        default=1.0,
+        help="If do_sample is True, will sample from the top k most likely tokens.",
+    )
+
     args = parser.parse_args()
 
     main(
@@ -276,4 +319,8 @@ if __name__ == "__main__":
         num_beams=args.num_beams,
         num_return_sequences=args.num_return_sequences,
         precision=args.precision,
+        do_sample=args.do_sample,
+        temperature=args.temperature,
+        top_k=args.top_k,
+        top_p=args.top_p,
     )

@@ -13,11 +13,7 @@
     <br>
 </p>
 
-Easy-Translate is a script for translating large text files in your machine using the [M2M100 models](https://arxiv.org/pdf/2010.11125.pdf) from Facebook/Meta AI.  We also privide a [script](#evaluate-translations) for Easy-Evaluation of your translations 🥳
-
-**M2M100** is a multilingual encoder-decoder (seq-to-seq) model trained for Many-to-Many multilingual translation introduced in this [paper](https://arxiv.org/abs/2010.11125) and first released in [this](https://github.com/pytorch/fairseq/tree/master/examples/m2m_100) repository.
-
->M2M100 can directly translate between 9,900 directions of 100 languages.
+Easy-Translate is a script for translating large text files in your machine using the [M2M100 models](https://arxiv.org/pdf/2010.11125.pdf) and [NLLB200 models](https://research.facebook.com/publications/no-language-left-behind/) from Facebook/Meta AI.  We also privide a [script](#evaluate-translations) for Easy-Evaluation of your translations 🥳
 
 Easy-Translate is built on top of 🤗HuggingFace's [Transformers](https://huggingface.co/docs/transformers/index) and 🤗HuggingFace's [Accelerate](https://huggingface.co/docs/accelerate/index) library.
 
@@ -27,18 +23,21 @@ We currently support:
 - BF16 / FP16 / FP32 precision.
 - Automatic batch size finder: Forget CUDA OOM errors. Set an initial batch size, if it doesn't fit, we will automatically adjust it.
 - Sharded Data Parallel to load huge models sharded on multiple GPUs (See: <https://huggingface.co/docs/accelerate/fsdp>).
+- Greedy decoding / Beam Search decoding / Multinomial Sampling / Beam-Search Multinomial Sampling
 
 >Test the 🔌 Online Demo here: <https://huggingface.co/spaces/Iker/Translate-100-languages>
+
 
 
 ## Supported languages
 
 See the [Supported languages table](supported_languages.md) for a table of the supported languages and their ids.
 
-**List of supported languages:**
-Afrikaans, Amharic, Arabic, Asturian, Azerbaijani, Bashkir, Belarusian, Bulgarian, Bengali, Breton, Bosnian, Catalan, Cebuano, Czech, Welsh, Danish, German, Greeek, English, Spanish, Estonian, Persian, Fulah, Finnish, French, WesternFrisian, Irish, Gaelic, Galician, Gujarati, Hausa, Hebrew, Hindi, Croatian, Haitian, Hungarian, Armenian, Indonesian, Igbo, Iloko, Icelandic, Italian, Japanese, Javanese, Georgian, Kazakh, CentralKhmer, Kannada, Korean, Luxembourgish, Ganda, Lingala, Lao, Lithuanian, Latvian, Malagasy, Macedonian, Malayalam, Mongolian, Marathi, Malay, Burmese, Nepali, Dutch, Norwegian, NorthernSotho, Occitan, Oriya, Panjabi, Polish, Pushto, Portuguese, Romanian, Russian, Sindhi, Sinhala, Slovak, Slovenian, Somali, Albanian, Serbian, Swati, Sundanese, Swedish, Swahili, Tamil, Thai, Tagalog, Tswana, Turkish, Ukrainian, Urdu, Uzbek, Vietnamese, Wolof, Xhosa, Yiddish, Yoruba, Chinese, Zulu
-
 ## Supported Models
+
+### M2M100
+**M2M100** is a multilingual encoder-decoder (seq-to-seq) model trained for Many-to-Many multilingual translation introduced in this [paper](https://arxiv.org/abs/2010.11125) and first released in [this](https://github.com/pytorch/fairseq/tree/master/examples/m2m_100) repository. 
+>M2M100 can directly translate between 9,900 directions of 100 languages.
 
 - **Facebook/m2m100_418M**: <https://huggingface.co/facebook/m2m100_418M>
 
@@ -46,7 +45,21 @@ Afrikaans, Amharic, Arabic, Asturian, Azerbaijani, Bashkir, Belarusian, Bulgaria
 
 - **Facebook/m2m100_12B**: <https://huggingface.co/facebook/m2m100-12B-avg-5-ckpt>
 
-- Any other m2m100 model from HuggingFace's Hub: <https://huggingface.co/models?search=m2m100>
+### NLLB200
+
+**No Language Left Behind (NLLB)** open-sources models capable of delivering high-quality translations directly between any pair of 200+ languages — including low-resource languages like Asturian, Luganda, Urdu and more. It aims to help people communicate with anyone, anywhere, regardless of their language preferences. It was introduced in this [paper](https://research.facebook.com/publications/no-language-left-behind/) and first released in [this](https://github.com/facebookresearch/fairseq/tree/nllb) repository.
+>NLLB can directly translate between +40,000 of +200 languages.
+
+- **facebook/nllb-200-3.3B**: <https://huggingface.co/facebook/nllb-200-3.3B>
+
+- **facebook/nllb-200-1.3B**: <https://huggingface.co/facebook/nllb-200-1.3B>
+
+- **facebook/nllb-200-distilled-1.3B**: <https://huggingface.co/facebook/nllb-200-distilled-1.3B>
+
+- **facebook/nllb-200-distilled-600M**: <https://huggingface.co/facebook/nllb-200-distilled-600M>
+
+
+Any other ModelForSeq2SeqLM from HuggingFace's Hub should work with this library: <https://huggingface.co/models?pipeline_tag=text2text-generation>
 
 ## Requirements
 
@@ -59,6 +72,9 @@ pip install --upgrade accelerate
 
 HuggingFace Transformers 
 pip install --upgrade transformers
+
+If you find errors using NLLB200, try installing transformers from source:
+pip install git+https://github.com/huggingface/transformers.git
 ```
 
 ## Translate a file
@@ -107,6 +123,62 @@ accelerate launch translate.py \
 --target_lang es \
 --model_name facebook/m2m100_1.2B \
 --precision fp16 
+```
+
+### Decoding/Sampling strategies
+
+You can choose the decoding/sampling strategy to use and the number of candidate translation to output for each input sentence. By default we will use beam-search with 'num_beams' set to 5, and we will output the most likely candidate translation. But you can change this behavior:
+##### Greedy decoding
+```bash
+accelerate launch translate.py \
+--sentences_path sample_text/en.txt \
+--output_path sample_text/en2es.translation.m2m100_1.2B.txt \
+--source_lang en \
+--target_lang es \
+--model_name facebook/m2m100_1.2B \
+--num_beams 1 
+```
+
+##### Multinomial Sampling 
+```bash
+accelerate launch translate.py \
+--sentences_path sample_text/en.txt \
+--output_path sample_text/en2es.translation.m2m100_1.2B.txt \
+--source_lang en \
+--target_lang es \
+--model_name facebook/m2m100_1.2B \
+--num_beams 1 \
+--do_sample \
+--temperature 0.5 \
+--top_k 100 \
+--top_p 0.8 \
+--num_return_sequences 1
+```
+##### Beam-Search decoding **(DEFAULT)**
+```bash
+accelerate launch translate.py \
+--sentences_path sample_text/en.txt \
+--output_path sample_text/en2es.translation.m2m100_1.2B.txt \
+--source_lang en \
+--target_lang es \
+--model_name facebook/m2m100_1.2B \
+--num_beams 5 \
+--num_return_sequences 1 \ 
+```
+##### Beam-Search Multinomial Sampling
+```bash
+accelerate launch translate.py \
+--sentences_path sample_text/en.txt \
+--output_path sample_text/en2es.translation.m2m100_1.2B.txt \
+--source_lang en \
+--target_lang es \
+--model_name facebook/m2m100_1.2B \
+--num_beams 5 \
+--num_return_sequences 1 \
+--do_sample \
+--temperature 0.5 \
+--top_k 100 \
+--top_p 0.8 
 ```
 
 ## Evaluate translations
