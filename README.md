@@ -67,7 +67,7 @@ Any other ModelForSeq2SeqLM from HuggingFace's Hub should work with this library
 Pytorch >= 1.10.0
 See: https://pytorch.org/get-started/locally/
 
-Accelerate >= 0.7.1
+Accelerate >= 0.12.0
 pip install --upgrade accelerate
 
 HuggingFace Transformers 

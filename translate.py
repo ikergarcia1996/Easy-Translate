@@ -1,17 +1,23 @@
+import os
+import math
+import argparse
+
+import torch
+from torch.utils.data import DataLoader
+
+from tqdm import tqdm
+
 from transformers import (
     AutoModelForSeq2SeqLM,
     AutoTokenizer,
     PreTrainedTokenizerBase,
     DataCollatorForSeq2Seq,
 )
-from tqdm import tqdm
-import argparse
-import torch
-from torch.utils.data import DataLoader
+
+
 from dataset import DatasetReader, count_lines
-import os
-from accelerate import Accelerator, DistributedType
-from accelerate.memory_utils import find_executable_batch_size
+
+from accelerate import Accelerator, DistributedType, find_executable_batch_size
 
 
 def get_dataloader(
@@ -45,6 +51,7 @@ def get_dataloader(
         dataset,
         batch_size=batch_size,
         collate_fn=data_collator,
+        num_workers=1,
     )
 
 
@@ -72,7 +79,7 @@ def main(
     accelerator = Accelerator(
         mixed_precision=precision if precision != "32" else "no",
         split_batches=False,
-        dispatch_batches=True,
+        dispatch_batches=False,
     )
 
     print(f"Loading tokenizer {model_name}...")
@@ -115,7 +122,7 @@ def main(
         "top_p": top_p,
     }
 
-    # total_lines: int = count_lines(sentences_path)
+    total_lines: int = count_lines(sentences_path)
 
     if accelerator.is_main_process:
         print(
@@ -155,7 +162,7 @@ def main(
         samples_seen: int = 0
 
         with tqdm(
-            total=len(data_loader.dataset),
+            total=total_lines,
             desc="Dataset translation",
             leave=True,
             ascii=True,
@@ -182,10 +189,16 @@ def main(
                         generated_tokens, skip_special_tokens=True
                     )
                     if accelerator.is_main_process:
-                        if step == len(data_loader) - 1:
+                        if (
+                            step
+                            == math.ceil(
+                                math.ceil(total_lines / batch_size)
+                                / accelerator.num_processes
+                            )
+                            - 1
+                        ):
                             tgt_text = tgt_text[
-                                : (len(data_loader.dataset) * num_return_sequences)
-                                - samples_seen
+                                : (total_lines * num_return_sequences) - samples_seen
                             ]
                         else:
                             samples_seen += len(tgt_text)
