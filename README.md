@@ -13,7 +13,7 @@
     <br>
 </p>
 
-Easy-Translate is a script for translating large text files in your machine using the [M2M100 models](https://arxiv.org/pdf/2010.11125.pdf) and [NLLB200 models](https://research.facebook.com/publications/no-language-left-behind/) from Facebook/Meta AI.  We also privide a [script](#evaluate-translations) for Easy-Evaluation of your translations 🥳
+Easy-Translate is a script for translating large text files in your machine using the [M2M100 models](https://arxiv.org/pdf/2010.11125.pdf) and [NLLB200 models](https://research.facebook.com/publications/no-language-left-behind/) from Facebook/Meta AI.  We also provide a [script](#evaluate-translations) for Easy-Evaluation of your translations 🥳
 
 Easy-Translate is built on top of 🤗HuggingFace's [Transformers](https://huggingface.co/docs/transformers/index) and 🤗HuggingFace's [Accelerate](https://huggingface.co/docs/accelerate/index) library.
 
