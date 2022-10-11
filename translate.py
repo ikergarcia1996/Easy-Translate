@@ -19,6 +19,10 @@ from dataset import DatasetReader, count_lines
 
 from accelerate import Accelerator, DistributedType, find_executable_batch_size
 
+torch.multiprocessing.set_sharing_strategy(
+    "file_system"
+)  # FIXES RuntimeError: Too many open files.
+
 
 def get_dataloader(
     accelerator: Accelerator,
