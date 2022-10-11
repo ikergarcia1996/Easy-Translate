@@ -19,7 +19,9 @@ def get_dataloader(pred_path: str, gold_path: str, batch_size: int):
         return list(map(list, zip(*batch)))
 
     reader = ParallelTextReader(pred_path=pred_path, gold_path=gold_path)
-    dataloader = DataLoader(reader, batch_size=batch_size, collate_fn=collate_fn)
+    dataloader = DataLoader(
+        reader, batch_size=batch_size, collate_fn=collate_fn, num_workers=0
+    )
     return dataloader
 
 
