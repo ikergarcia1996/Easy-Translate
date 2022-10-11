@@ -14,6 +14,8 @@ class DatasetReader(IterableDataset):
         self.current_line = 0
         self.total_lines = count_lines(filename)
         print(f"{self.total_lines} lines in {filename}")
+        file_itr = open(self.filename, "r", encoding="utf8")
+        self.mapped_itr = map(self.preprocess, file_itr)
 
     def preprocess(self, text: str):
         self.current_line += 1
@@ -29,9 +31,7 @@ class DatasetReader(IterableDataset):
         )
 
     def __iter__(self):
-        file_itr = open(self.filename, "r", encoding="utf8")
-        mapped_itr = map(self.preprocess, file_itr)
-        return mapped_itr
+        return self.mapped_itr
 
     def __len__(self):
         return self.total_lines
@@ -50,6 +50,10 @@ class ParallelTextReader(IterableDataset):
         self.num_sentences = gold_path_lines
         self.current_line = 0
 
+        pred_itr = open(self.pred_path, "r", encoding="utf8")
+        gold_itr = open(self.gold_path, "r", encoding="utf8")
+        self.mapped_itr = map(self.preprocess, pred_itr, gold_itr)
+
     def preprocess(self, pred: str, gold: str):
         self.current_line += 1
         pred = pred.rstrip().strip()
@@ -61,10 +65,7 @@ class ParallelTextReader(IterableDataset):
         return pred, [gold]
 
     def __iter__(self):
-        pred_itr = open(self.pred_path, "r", encoding="utf8")
-        gold_itr = open(self.gold_path, "r", encoding="utf8")
-        mapped_itr = map(self.preprocess, pred_itr, gold_itr)
-        return mapped_itr
+        return self.mapped_itr
 
     def __len__(self):
         return self.num_sentences
