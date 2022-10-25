@@ -61,6 +61,19 @@ See the [Supported languages table](supported_languages.md) for a table of the s
 
 Any other ModelForSeq2SeqLM from HuggingFace's Hub should work with this library: <https://huggingface.co/models?pipeline_tag=text2text-generation>
 
+## Citation
+If you use this software please cite
+````
+@misc{garcíaferrero2022model,
+      title={Model and Data Transfer for Cross-Lingual Sequence Labelling in Zero-Resource Settings}, 
+      author={Iker García-Ferrero and Rodrigo Agerri and German Rigau},
+      year={2022},
+      eprint={2210.12623},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+````
+
 ## Requirements
 
 ```
