@@ -73,8 +73,7 @@ def main(
     top_p: float = 1.0,
 ):
 
-    if not os.path.exists(os.path.abspath(os.path.dirname(output_path))):
-        os.makedirs(os.path.abspath(os.path.dirname(output_path)))
+    os.makedirs(os.path.abspath(os.path.dirname(output_path)), exist_ok=True)
 
     accelerator = Accelerator(
         mixed_precision=precision if precision != "32" else "no",
@@ -104,7 +103,14 @@ def main(
     else:
         raise ValueError("Precision not supported. Supported values: 32, fp16, bf16")
 
+    try:
+        _ = tokenizer.lang_code_to_id[source_lang]
+    except KeyError:
+        raise KeyError(
+            f"Language {source_lang} not found in tokenizer. Available languages: {tokenizer.lang_code_to_id.keys()}"
+        )
     tokenizer.src_lang = source_lang
+
     try:
         lang_code_to_idx = tokenizer.lang_code_to_id[target_lang]
     except KeyError:
