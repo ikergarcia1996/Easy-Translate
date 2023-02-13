@@ -64,13 +64,18 @@ Any other ModelForSeq2SeqLM from HuggingFace's Hub should work with this library
 ## Citation
 If you use this software please cite
 ````
-@misc{garcíaferrero2022model,
-      title={Model and Data Transfer for Cross-Lingual Sequence Labelling in Zero-Resource Settings}, 
-      author={Iker García-Ferrero and Rodrigo Agerri and German Rigau},
-      year={2022},
-      eprint={2210.12623},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL}
+@inproceedings{garcia-ferrero-etal-2022-model,
+    title = "Model and Data Transfer for Cross-Lingual Sequence Labelling in Zero-Resource Settings",
+    author = "Garc{\'\i}a-Ferrero, Iker  and
+      Agerri, Rodrigo  and
+      Rigau, German",
+    booktitle = "Findings of the Association for Computational Linguistics: EMNLP 2022",
+    month = dec,
+    year = "2022",
+    address = "Abu Dhabi, United Arab Emirates",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2022.findings-emnlp.478",
+    pages = "6403--6416",
 }
 ````
 
