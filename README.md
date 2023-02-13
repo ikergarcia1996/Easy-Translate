@@ -211,8 +211,8 @@ Run the following command to evaluate the translations:
 
 ```bash
 accelerate launch eval.py \
---pred_path sample_text/es.txt \
---gold_path sample_text/en2es.translation.m2m100_1.2B.txt 
+--pred_path sample_text/en2es.translation.m2m100_1.2B.txt 
+--gold_path sample_text/es.txt \
 ```
 
 If you want to save the results to a file use the `--output_path` flag.
