@@ -17,7 +17,7 @@ class DatasetReader(IterableDataset):
 
     def preprocess(self, text: str):
         self.current_line += 1
-        text = text.rstrip().strip()
+        text = text.strip()
         if len(text) == 0:
             print(f"Warning: empty sentence at line {self.current_line}")
         return self.tokenizer(
@@ -52,8 +52,8 @@ class ParallelTextReader(IterableDataset):
 
     def preprocess(self, pred: str, gold: str):
         self.current_line += 1
-        pred = pred.rstrip().strip()
-        gold = gold.rstrip().strip()
+        pred = pred.strip()
+        gold = gold.strip()
         if len(pred) == 0:
             print(f"Warning: Pred empty sentence at line {self.current_line}")
         if len(gold) == 0:

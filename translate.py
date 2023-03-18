@@ -209,7 +209,10 @@ def main(
                         else:
                             samples_seen += len(tgt_text)
 
-                        print("\n".join(tgt_text), file=output_file)
+                        print(
+                            "\n".join([repr(sentence) for sentence in tgt_text]),
+                            file=output_file,
+                        )
 
                     pbar.update(len(tgt_text) // gen_kwargs["num_return_sequences"])
 
