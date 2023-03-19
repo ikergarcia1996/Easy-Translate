@@ -20,6 +20,10 @@ from dataset import DatasetReader, count_lines
 from accelerate import Accelerator, DistributedType, find_executable_batch_size
 
 
+def encode_string(text):
+    return text.replace("\r", r"\r").replace("\n", r"\n").replace("\t", r"\t")
+
+
 def get_dataloader(
     accelerator: Accelerator,
     filename: str,
@@ -211,10 +215,7 @@ def main(
 
                         print(
                             "\n".join(
-                                [
-                                    sentence.replace("\n", r"\n").replace("\t", r"\t")
-                                    for sentence in tgt_text
-                                ]
+                                [encode_string(sentence) for sentence in tgt_text]
                             ),
                             file=output_file,
                         )
