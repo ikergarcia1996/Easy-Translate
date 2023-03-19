@@ -210,7 +210,12 @@ def main(
                             samples_seen += len(tgt_text)
 
                         print(
-                            "\n".join([repr(sentence) for sentence in tgt_text]),
+                            "\n".join(
+                                [
+                                    sentence.replace("\n", r"\n").replace("\t", r"\t")
+                                    for sentence in tgt_text
+                                ]
+                            ),
                             file=output_file,
                         )
 
