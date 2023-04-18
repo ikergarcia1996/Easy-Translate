@@ -75,6 +75,7 @@ def main(
     temperature: float = 1.0,
     top_k: int = 50,
     top_p: float = 1.0,
+    keep_special_tokens: bool = False,
 ):
 
     os.makedirs(os.path.abspath(os.path.dirname(output_path)), exist_ok=True)
@@ -196,7 +197,7 @@ def main(
                     )
 
                     tgt_text = tokenizer.batch_decode(
-                        generated_tokens, skip_special_tokens=True
+                        generated_tokens, skip_special_tokens=not keep_special_tokens
                     )
                     if accelerator.is_main_process:
                         if (
@@ -335,6 +336,12 @@ if __name__ == "__main__":
         help="If do_sample is True, will sample from the top k most likely tokens.",
     )
 
+    parser.add_argument(
+        "--keep_special_tokens",
+        action="store_true",
+        help="Keep special tokens in the decoded text.",
+    )
+
     args = parser.parse_args()
 
     main(
@@ -353,4 +360,5 @@ if __name__ == "__main__":
         temperature=args.temperature,
         top_k=args.top_k,
         top_p=args.top_p,
+        keep_special_tokens=args.keep_special_tokens
     )
