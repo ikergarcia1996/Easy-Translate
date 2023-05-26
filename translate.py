@@ -31,7 +31,6 @@ def get_dataloader(
     batch_size: int,
     max_length: int,
 ) -> DataLoader:
-
     dataset = DatasetReader(filename, tokenizer, max_length)
     if accelerator.distributed_type == DistributedType.TPU:
         data_collator = DataCollatorForSeq2Seq(
@@ -76,8 +75,8 @@ def main(
     top_k: int = 50,
     top_p: float = 1.0,
     keep_special_tokens: bool = False,
+    keep_tokenization_spaces: bool = False,
 ):
-
     os.makedirs(os.path.abspath(os.path.dirname(output_path)), exist_ok=True)
 
     accelerator = Accelerator(
@@ -149,6 +148,8 @@ def main(
             f"Max length: {max_length}\n"
             f"Precision: {model.dtype}\n"
             f"Model: {model_name}\n"
+            f"Keep special tokens: {keep_special_tokens}\n"
+            f"Keep tokenization spaces: {keep_tokenization_spaces}\n"
         )
         print("** Generation parameters **")
         print("\n".join(f"{k}: {v}" for k, v in gen_kwargs.items()))
@@ -197,7 +198,9 @@ def main(
                     )
 
                     tgt_text = tokenizer.batch_decode(
-                        generated_tokens, skip_special_tokens=not keep_special_tokens
+                        generated_tokens,
+                        skip_special_tokens=not keep_special_tokens,
+                        clean_up_tokenization_spaces=not keep_tokenization_spaces,
                     )
                     if accelerator.is_main_process:
                         if (
@@ -342,6 +345,12 @@ if __name__ == "__main__":
         help="Keep special tokens in the decoded text.",
     )
 
+    parser.add_argument(
+        "--keep_tokenization_spaces",
+        action="store_true",
+        help="Do not clean spaces in the decoded text.",
+    )
+
     args = parser.parse_args()
 
     main(
@@ -360,5 +369,6 @@ if __name__ == "__main__":
         temperature=args.temperature,
         top_k=args.top_k,
         top_p=args.top_p,
-        keep_special_tokens=args.keep_special_tokens
+        keep_special_tokens=args.keep_special_tokens,
+        keep_tokenization_spaces=args.keep_tokenization_spaces,
     )
