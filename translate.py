@@ -76,6 +76,7 @@ def main(
     top_p: float = 1.0,
     keep_special_tokens: bool = False,
     keep_tokenization_spaces: bool = False,
+    repetition_penalty: float = None,
 ):
     os.makedirs(os.path.abspath(os.path.dirname(output_path)), exist_ok=True)
 
@@ -131,6 +132,9 @@ def main(
         "top_k": top_k,
         "top_p": top_p,
     }
+
+    if repetition_penalty is not None:
+        gen_kwargs["repetition_penalty"] = repetition_penalty
 
     total_lines: int = count_lines(sentences_path)
 
@@ -351,6 +355,13 @@ if __name__ == "__main__":
         help="Do not clean spaces in the decoded text.",
     )
 
+    parser.add_argument(
+        "--repetition_penalty",
+        type=float,
+        default=None,
+        help="Repetition penalty.",
+    )
+
     args = parser.parse_args()
 
     main(
@@ -371,4 +382,5 @@ if __name__ == "__main__":
         top_p=args.top_p,
         keep_special_tokens=args.keep_special_tokens,
         keep_tokenization_spaces=args.keep_tokenization_spaces,
+        repetition_penalty=args.repetition_penalty,
     )
