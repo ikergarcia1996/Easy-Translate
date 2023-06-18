@@ -148,7 +148,7 @@ We will automatically find a batch size that fits in your GPU memory. The defaul
 
 ### Loading Huge Models
 
-Huge models such as LLaMA 65B or nllb-moe-54b can be load in a single GPU with 8 bits and 4 bits quantification with minimal performance degradation. 
+Huge models such as LLaMA 65B or nllb-moe-54b can be loaded in a single GPU with 8 bits and 4 bits quantification with minimal performance degradation. 
 See [BitsAndBytes](https://github.com/TimDettmers/bitsandbytes). Set precision to 8 or 4 with the `--precision` flag. 
 
 ```bash
