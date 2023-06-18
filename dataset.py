@@ -7,19 +7,24 @@ def count_lines(input_path: str) -> int:
 
 
 class DatasetReader(IterableDataset):
-    def __init__(self, filename, tokenizer, max_length=128):
+    def __init__(self, filename, tokenizer, max_length=128, prompt: str = None):
         self.filename = filename
         self.tokenizer = tokenizer
         self.max_length = max_length
         self.current_line = 0
         self.total_lines = count_lines(filename)
+        self.prompt = prompt
         print(f"{self.total_lines} lines in {filename}")
 
     def preprocess(self, text: str):
         self.current_line += 1
         text = text.strip()
+
         if len(text) == 0:
             print(f"Warning: empty sentence at line {self.current_line}")
+
+        if self.prompt is not None:
+            text = self.prompt.replace("%%SENTENCE%%", text)
         return self.tokenizer(
             text,
             padding=False,

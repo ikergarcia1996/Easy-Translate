@@ -1,7 +1,7 @@
 from dataset import ParallelTextReader
 from torch.utils.data import DataLoader
-from accelerate.memory_utils import find_executable_batch_size
-from datasets import load_metric
+from accelerate import find_executable_batch_size
+from evaluate import load
 from tqdm import tqdm
 import torch
 import json
@@ -46,41 +46,40 @@ def eval_files(
 
     dataloader = get_dataloader(pred_path, gold_path, starting_batch_size)
     print("Loading sacrebleu...")
-    sacrebleu = load_metric("sacrebleu")
+    sacrebleu = load("sacrebleu")
     print("Loading rouge...")
-    rouge = load_metric("rouge")
+    rouge = load("rouge")
     print("Loading bleu...")
-    bleu = load_metric("bleu")
+    bleu = load("bleu")
     print("Loading meteor...")
-    meteor = load_metric("meteor")
+    meteor = load("meteor")
     print("Loading ter...")
-    ter = load_metric("ter")
+    ter = load("ter")
     print("Loading BertScore...")
-    bert_score = load_metric("bertscore")
+    bert_score = load("bertscore")
 
     with tqdm(total=len(dataloader.dataset), desc="Loading data...") as pbar:
         for predictions, references in dataloader:
             sacrebleu.add_batch(predictions=predictions, references=references)
             rouge.add_batch(predictions=predictions, references=references)
-            bleu.add_batch(
-                predictions=[p.split() for p in predictions],
-                references=[[r[0].split()] for r in references],
-            )
+            bleu.add_batch(predictions=predictions, references=references)
             meteor.add_batch(predictions=predictions, references=references)
             ter.add_batch(predictions=predictions, references=references)
             bert_score.add_batch(predictions=predictions, references=references)
             pbar.update(len(predictions))
 
-    result_dictionary = {}
-    print(f"Computing sacrebleu")
+    result_dictionary = {"path": pred_path}
+    print("Computing sacrebleu")
     result_dictionary["sacrebleu"] = sacrebleu.compute()
-    print(f"Computing rouge score")
-    result_dictionary["rouge"] = rouge.compute()
-    print(f"Computing bleu score")
+    print("Computing rouge score")
+    result_dictionary["rouge"] = rouge.compute(
+        use_aggregator=True, rouge_types=["rouge1", "rouge2", "rougeL", "rougeLsum"]
+    )
+    print("Computing bleu score")
     result_dictionary["bleu"] = bleu.compute()
-    print(f"Computing meteor score")
+    print("Computing meteor score")
     result_dictionary["meteor"] = meteor.compute()
-    print(f"Computing ter score")
+    print("Computing ter score")
     result_dictionary["ter"] = ter.compute()
 
     @find_executable_batch_size(starting_batch_size=starting_batch_size)

@@ -8,12 +8,11 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from transformers import (
-    AutoModelForSeq2SeqLM,
-    AutoTokenizer,
     PreTrainedTokenizerBase,
     DataCollatorForSeq2Seq,
 )
 
+from model import load_model_for_inference
 
 from dataset import DatasetReader, count_lines
 
@@ -30,8 +29,9 @@ def get_dataloader(
     tokenizer: PreTrainedTokenizerBase,
     batch_size: int,
     max_length: int,
+    prompt: str,
 ) -> DataLoader:
-    dataset = DatasetReader(filename, tokenizer, max_length)
+    dataset = DatasetReader(filename, tokenizer, max_length, prompt)
     if accelerator.distributed_type == DistributedType.TPU:
         data_collator = DataCollatorForSeq2Seq(
             tokenizer,
@@ -65,8 +65,9 @@ def main(
     target_lang: str,
     starting_batch_size: int,
     model_name: str = "facebook/m2m100_1.2B",
-    cache_dir: str = None,
-    precision: str = "32",
+    lora_weights_name_or_path: str = None,
+    force_auto_device_map: bool = False,
+    precision: str = None,
     max_length: int = 128,
     num_beams: int = 4,
     num_return_sequences: int = 1,
@@ -77,51 +78,84 @@ def main(
     keep_special_tokens: bool = False,
     keep_tokenization_spaces: bool = False,
     repetition_penalty: float = None,
+    prompt: str = None,
 ):
     os.makedirs(os.path.abspath(os.path.dirname(output_path)), exist_ok=True)
 
-    accelerator = Accelerator(
-        mixed_precision=precision if precision != "32" else "no",
-        split_batches=False,
-        dispatch_batches=False,
-    )
+    accelerator = Accelerator()
 
-    print(f"Loading tokenizer {model_name}...")
-    tokenizer = AutoTokenizer.from_pretrained(
-        pretrained_model_name_or_path=model_name, cache_dir=cache_dir
-    )
-    print(f"Loading model {model_name}...")
-    model = AutoModelForSeq2SeqLM.from_pretrained(
-        pretrained_model_name_or_path=model_name, cache_dir=cache_dir
-    )
-
-    model.eval()
-
-    print(f"Preparing data...\n")
-
-    if precision == "32":
-        model = model.float()
+    if precision is None:
+        quantization = None
+        dtype = None
+    elif precision == "8" or precision == "4":
+        quantization = int(precision)
+        dtype = None
     elif precision == "fp16":
-        model = model.half()
+        quantization = None
+        dtype = "float16"
     elif precision == "bf16":
-        model = model.bfloat16()
+        quantization = None
+        dtype = "bfloat16"
+    elif precision == "32":
+        quantization = None
+        dtype = "float32"
     else:
-        raise ValueError("Precision not supported. Supported values: 32, fp16, bf16")
-
-    try:
-        _ = tokenizer.lang_code_to_id[source_lang]
-    except KeyError:
-        raise KeyError(
-            f"Language {source_lang} not found in tokenizer. Available languages: {tokenizer.lang_code_to_id.keys()}"
+        raise ValueError(
+            f"Precision {precision} not supported. Please choose between 8, 4, fp16, bf16, 32 or None."
         )
-    tokenizer.src_lang = source_lang
 
-    try:
-        lang_code_to_idx = tokenizer.lang_code_to_id[target_lang]
-    except KeyError:
-        raise KeyError(
-            f"Language {target_lang} not found in tokenizer. Available languages: {tokenizer.lang_code_to_id.keys()}"
+    model, tokenizer = load_model_for_inference(
+        weights_path=model_name,
+        quantization=quantization,
+        lora_weights_name_or_path=lora_weights_name_or_path,
+        torch_dtype=dtype,
+        force_auto_device_map=force_auto_device_map,
+    )
+
+    is_translation_model = hasattr(tokenizer, "lang_code_to_id")
+
+    if is_translation_model and (source_lang is None or target_lang is None):
+        raise ValueError(
+            f"The model you are using requires a source and target language. "
+            f"Please specify them with --source-lang and --target-lang. "
+            f"The supported languages are: {tokenizer.lang_code_to_id.keys()}"
         )
+    if not is_translation_model and (
+        source_lang is not None or target_lang is not None
+    ):
+        if prompt is None:
+            print(
+                "WARNING: You are using a model that does not support source and target languages parameters "
+                "but you specified them. You probably want to use m2m100/nllb200 for translation or "
+                "set --prompt to define the task for you model. "
+            )
+        else:
+            print(
+                "WARNING: You are using a model that does not support source and target languages parameters "
+                "but you specified them."
+            )
+
+    if prompt is not None and "%%SENTENCE%%" not in prompt:
+        raise ValueError(
+            f"The prompt must contain the %%SENTENCE%% token to indicate where the sentence should be inserted. "
+            f"Your prompt: {prompt}"
+        )
+
+    if is_translation_model:
+        try:
+            _ = tokenizer.lang_code_to_id[source_lang]
+        except KeyError:
+            raise KeyError(
+                f"Language {source_lang} not found in tokenizer. Available languages: {tokenizer.lang_code_to_id.keys()}"
+            )
+        tokenizer.src_lang = source_lang
+
+        try:
+            lang_code_to_idx = tokenizer.lang_code_to_id[target_lang]
+        except KeyError:
+            raise KeyError(
+                f"Language {target_lang} not found in tokenizer. Available languages: {tokenizer.lang_code_to_id.keys()}"
+            )
 
     gen_kwargs = {
         "max_length": max_length,
@@ -145,13 +179,18 @@ def main(
             f"Output file: {output_path}\n"
             f"Source language: {source_lang}\n"
             f"Target language: {target_lang}\n"
+            f"is_translation_model: {is_translation_model}\n"
+            f"Prompt: {prompt}\n"
             f"Starting batch size: {starting_batch_size}\n"
             f"Device: {str(accelerator.device).split(':')[0]}\n"
             f"Num. Devices: {accelerator.num_processes}\n"
             f"Distributed_type: {accelerator.distributed_type}\n"
             f"Max length: {max_length}\n"
-            f"Precision: {model.dtype}\n"
+            f"Quantization: {quantization}\n"
+            f"Precision: {dtype}\n"
             f"Model: {model_name}\n"
+            f"LoRA weights: {lora_weights_name_or_path}\n"
+            f"Force auto device map: {force_auto_device_map}\n"
             f"Keep special tokens: {keep_special_tokens}\n"
             f"Keep tokenization spaces: {keep_tokenization_spaces}\n"
         )
@@ -161,7 +200,7 @@ def main(
 
     @find_executable_batch_size(starting_batch_size=starting_batch_size)
     def inference(batch_size):
-        nonlocal model, tokenizer, sentences_path, max_length, output_path, lang_code_to_idx, gen_kwargs, precision
+        nonlocal model, tokenizer, sentences_path, max_length, output_path, lang_code_to_idx, gen_kwargs, precision, prompt, is_translation_model
 
         print(f"Translating with batch size {batch_size}")
 
@@ -171,6 +210,7 @@ def main(
             tokenizer=tokenizer,
             batch_size=batch_size,
             max_length=max_length,
+            prompt=prompt,
         )
 
         model, data_loader = accelerator.prepare(model, data_loader)
@@ -190,7 +230,11 @@ def main(
                     batch["attention_mask"] = batch["attention_mask"]
 
                     generated_tokens = accelerator.unwrap_model(model).generate(
-                        **batch, forced_bos_token_id=lang_code_to_idx, **gen_kwargs
+                        **batch,
+                        forced_bos_token_id=lang_code_to_idx
+                        if is_translation_model
+                        else None,
+                        **gen_kwargs,
                     )
 
                     generated_tokens = accelerator.pad_across_processes(
@@ -253,15 +297,17 @@ if __name__ == "__main__":
     parser.add_argument(
         "--source_lang",
         type=str,
-        required=True,
-        help="Source language id. See: supported_languages.md",
+        default=None,
+        required=False,
+        help="Source language id. See: supported_languages.md. Required for m2m100 and nllb200",
     )
 
     parser.add_argument(
         "--target_lang",
         type=str,
-        required=True,
-        help="Target language id. See: supported_languages.md",
+        default=None,
+        required=False,
+        help="Source language id. See: supported_languages.md. Required for m2m100 and nllb200",
     )
 
     parser.add_argument(
@@ -280,10 +326,18 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "--cache_dir",
+        "--lora_weights_name_or_path",
         type=str,
         default=None,
-        help="Cache directory from which to load the model, or None to not cache",
+        help="If the model uses LoRA weights, path to those weights. See: https://github.com/huggingface/peft",
+    )
+
+    parser.add_argument(
+        "--force_auto_device_map",
+        action="store_true",
+        help=" Whether to force the use of the auto device map. If set to True, "
+        "the model will be split across GPUs and CPU to fit the model in memory. "
+        "If set to False, a full copy of the model will be loaded  into each GPU. Defaults to False.",
     )
 
     parser.add_argument(
@@ -311,9 +365,11 @@ if __name__ == "__main__":
     parser.add_argument(
         "--precision",
         type=str,
-        default="32",
-        choices=["bf16", "fp16", "32"],
-        help="Precision of the model. bf16, fp16 or 32.",
+        default=None,
+        choices=["bf16", "fp16", "32", "4", "8"],
+        help="Precision of the model. bf16, fp16 or 32, 8 , 4 "
+        "(4bits/8bits quantification, requires bitsandbytes library: https://github.com/TimDettmers/bitsandbytes). "
+        "If None, we will use the torch.dtype of the model weights.",
     )
 
     parser.add_argument(
@@ -362,6 +418,14 @@ if __name__ == "__main__":
         help="Repetition penalty.",
     )
 
+    parser.add_argument(
+        "--prompt",
+        type=str,
+        default=None,
+        help="Prompt to use for generation. "
+        "It must include the special token %%SENTENCE%% which will be replaced by the sentence to translate.",
+    )
+
     args = parser.parse_args()
 
     main(
@@ -371,7 +435,6 @@ if __name__ == "__main__":
         target_lang=args.target_lang,
         starting_batch_size=args.starting_batch_size,
         model_name=args.model_name,
-        cache_dir=args.cache_dir,
         max_length=args.max_length,
         num_beams=args.num_beams,
         num_return_sequences=args.num_return_sequences,
@@ -383,4 +446,5 @@ if __name__ == "__main__":
         keep_special_tokens=args.keep_special_tokens,
         keep_tokenization_spaces=args.keep_tokenization_spaces,
         repetition_penalty=args.repetition_penalty,
+        prompt=args.prompt,
     )
