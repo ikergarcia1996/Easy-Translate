@@ -29,7 +29,7 @@ We currently support:
 - BF16 / FP16 / FP32 / 8 Bits / 4 Bits precision.
 - Automatic batch size finder: Forget CUDA OOM errors. Set an initial batch size, if it doesn't fit, we will automatically adjust it.
 - Multiple decoding strategies: Greedy Search, Beam Search, Top-K Sampling, Top-p (nucleus) sampling, etc. See [Decoding Strategies](#decodingsampling-strategies) for more information.
-- :new: Load huge models in a single with GPU 8-bits / 4-bits quantization and support for splitting the model between GPU and CPU. See [Loading Huge Models](#loading-huge-models) for more information.
+- :new: Load huge models in a single GPU with 8-bits / 4-bits quantization and support for splitting the model between GPU and CPU. See [Loading Huge Models](#loading-huge-models) for more information.
 - :new: LoRA models support 
 - :new: Support for any Seq2SeqLM or CausalLM model from HuggingFace's Hub.
 - :new: Prompt support! See [Prompting](#prompting) for more information.
