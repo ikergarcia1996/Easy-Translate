@@ -1,0 +1,60 @@
+{
+    "path": "sample_text/en2es.translation.nllb-200_3B.txt",
+    "sacrebleu": {
+        "score": 36.1806558580766,
+        "counts": [
+            20331,
+            12688,
+            8717,
+            6126
+        ],
+        "totals": [
+            31189,
+            30189,
+            29189,
+            28189
+        ],
+        "precisions": [
+            65.18644393856809,
+            42.02855344661963,
+            29.86398985919353,
+            21.731881230267124
+        ],
+        "bp": 0.9908084778664968,
+        "sys_len": 31189,
+        "ref_len": 31477
+    },
+    "rouge": {
+        "rouge1": 0.6296302993105114,
+        "rouge2": 0.4251646068510136,
+        "rougeL": 0.581729073803074,
+        "rougeLsum": 0.5819048504270989
+    },
+    "bleu": {
+        "bleu": 0.361806558580766,
+        "precisions": [
+            0.6518644393856808,
+            0.4202855344661963,
+            0.2986398985919353,
+            0.21731881230267125
+        ],
+        "brevity_penalty": 0.9908084778664968,
+        "length_ratio": 0.9908504622422721,
+        "translation_length": 31189,
+        "reference_length": 31477
+    },
+    "meteor": {
+        "meteor": 0.5972263887277424
+    },
+    "ter": {
+        "score": 54.04040404040404,
+        "num_edits": 15301,
+        "ref_length": 28314.0
+    },
+    "bert_score": {
+        "precision": 0.8332746320664882,
+        "recall": 0.8329256139397622,
+        "f1": 0.8327405597269535,
+        "hashcode": "microsoft/deberta-xlarge-mnli_L40_no-idf_version=0.3.12(hug_trans=4.30.0.dev0)_fast-tokenizer"
+    }
+}

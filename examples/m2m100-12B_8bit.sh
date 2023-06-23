@@ -3,8 +3,6 @@
 # with a lot of RAM, running the model in FP16 should be faster and produce sighly better results,
 # see examples/m2m100-12B_fp16.sh
 
-cd ..
-
 python3 translate.py \
 --sentences_path sample_text/en.txt \
 --output_path sample_text/en2es.translation.m2m100_12B.txt \

@@ -164,6 +164,10 @@ def main(
             raise KeyError(
                 f"Language {target_lang} not found in tokenizer. Available languages: {tokenizer.lang_code_to_id.keys()}"
             )
+        if "small100" in model_name:
+            tokenizer.tgt_lang = target_lang
+            # We don't need to force the BOS token, so we set is_translation_model to False
+            is_translation_model = False
 
     gen_kwargs = {
         "max_length": max_length,
@@ -187,7 +191,7 @@ def main(
             f"Output file: {output_path}\n"
             f"Source language: {source_lang}\n"
             f"Target language: {target_lang}\n"
-            f"is_translation_model: {is_translation_model}\n"
+            f"Force target lang as BOS token: {is_translation_model}\n"
             f"Prompt: {prompt}\n"
             f"Starting batch size: {starting_batch_size}\n"
             f"Device: {str(accelerator.device).split(':')[0]}\n"

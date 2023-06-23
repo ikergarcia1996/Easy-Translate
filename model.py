@@ -2,7 +2,6 @@ from transformers import (
     AutoConfig,
     AutoModelForCausalLM,
     AutoModelForSeq2SeqLM,
-    AutoTokenizer,
     BitsAndBytesConfig,
     PreTrainedModel,
     PreTrainedTokenizerBase,
@@ -83,6 +82,12 @@ def load_model_for_inference(
     torch_dtype = (
         torch_dtype if torch_dtype in ["auto", None] else getattr(torch, torch_dtype)
     )
+
+    if "small100" in weights_path:
+        print(f"Loading custom small100 tokenizer for utils.tokenization_small100")
+        from utils.tokenization_small100 import SMALL100Tokenizer as AutoTokenizer
+    else:
+        from transformers import AutoTokenizer
 
     tokenizer: PreTrainedTokenizerBase = AutoTokenizer.from_pretrained(
         weights_path,

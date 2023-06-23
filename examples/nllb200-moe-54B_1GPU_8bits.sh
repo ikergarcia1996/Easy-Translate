@@ -3,8 +3,6 @@
 # the --force_auto_device_map flag that will offload the model parameters that don't fit on the GPU to the CPU.
 # If 8-bit quantization is not enough, you can use 4-bit quantization, see examples/nllb200-moe-54B_1GPU_4bits.sh
 
-cd ..
-
 python3 translate.py \
 --sentences_path sample_text/en.txt \
 --output_path sample_text/en2es.translation.nllb200-moe-54B.txt \

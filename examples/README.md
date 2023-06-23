@@ -3,6 +3,8 @@
 This folder contains examples of how to use Easy-Translate with different models and configurations.
 You can adapt these examples to your own use cases. If you have any questions, please feel free to open an issue.
 
+> Run the examples from the root of the Easy-Translate repository as follows: `sh examples/<example>.sh`
+
 ### MT Models
 
 ```bash

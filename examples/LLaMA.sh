@@ -1,7 +1,5 @@
 # Run LLaMA65B model on sample text using prompting
 
-cd ..
-
 python3 translate.py \
 --sentences_path sample_text/en.txt \
 --output_path sample_text/en2es.LLaMA.translation.txt \

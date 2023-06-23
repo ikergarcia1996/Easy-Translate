@@ -1,8 +1,6 @@
 # Run Alpaca-Lora (A LoRA model) model on sample text using prompting
 # We need to set the base model with --model_name and the LoRA weights with --lora_weights_name_or_path
 
-cd ..
-
 python3 translate.py \
 --sentences_path sample_text/en.txt \
 --output_path sample_text/en2es.AlpacaLora.translation.txt \

@@ -2,9 +2,6 @@
 # 4-bit quantization to reduce the required VRAM. Still it might not fit on a single GPU, so we also use
 # the --force_auto_device_map flag that will offload the model parameters that don't fit on the GPU to the CPU.
 
-
-cd ..
-
 python3 translate.py \
 --sentences_path sample_text/en.txt \
 --output_path sample_text/en2es.translation.nllb200-moe-54B.txt \
