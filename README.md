@@ -74,10 +74,10 @@ You can also see [the examples folder](examples) for examples of how to use Easy
 - **facebook/nllb-200-distilled-600M**: <https://huggingface.co/facebook/nllb-200-distilled-600M>
 
 ### Other MT Models supported
-We support every MT model in the 🤗 Hugging Face's HUB. If you find one that doesn't work, please open an issue for us to fix it or a PR with the fix. This includes, amoung meny others:
+We support every MT model in the 🤗 Hugging Face's Hub. If you find one that doesn't work, please open an issue for us to fix it or a PR with the fix. This includes, among many others:
 - **Small100**: <https://huggingface.co/alirezamsh/small100>
 - **Mbart many-to-many / many-to-one**: <https://huggingface.co/facebook/mbart-large-50-many-to-many-mmt>
-- **Opus MT**: <Helsinki-NLP/opus-mt-es-en>
+- **Opus MT**: <https://huggingface.co/Helsinki-NLP/opus-mt-es-en>
 
 
 
