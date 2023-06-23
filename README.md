@@ -44,8 +44,9 @@ See the [Supported languages table](supported_languages.md) for a table of the s
 
 ## Supported Models
 
-💥 EasyTranslate now supports any Seq2SeqLM (m2m100, nllb200, MarianMT, T5, FlanT5, etc.) and any CausalLM (GPT2, LLaMA, Vicuna, Falcon) model from HuggingFace's Hub!!
+💥 EasyTranslate now supports any Seq2SeqLM (m2m100, nllb200, small100, mbart, MarianMT, T5, FlanT5, etc.) and any CausalLM (GPT2, LLaMA, Vicuna, Falcon) model from HuggingFace's Hub!!
 We still recommend you to use M2M100 or NLLB200 for the best results, but you can experiment with other LLMs and prompting to generate translations. See [Prompting Section](#prompting) for more information. 
+You can also see [the examples folder](examples) for examples of how to use EasyTranslate with different models.
 
 ### M2M100
 **M2M100** is a multilingual encoder-decoder (seq-to-seq) model trained for Many-to-Many multilingual translation introduced in this [paper](https://arxiv.org/abs/2010.11125) and first released in [this](https://github.com/pytorch/fairseq/tree/master/examples/m2m_100) repository. 
@@ -71,6 +72,13 @@ We still recommend you to use M2M100 or NLLB200 for the best results, but you ca
 - **facebook/nllb-200-distilled-1.3B**: <https://huggingface.co/facebook/nllb-200-distilled-1.3B>
 
 - **facebook/nllb-200-distilled-600M**: <https://huggingface.co/facebook/nllb-200-distilled-600M>
+
+### Other MT Models supported
+We support every MT model in the 🤗 Hugging Face's HUB. If you find one that doesn't work, please open an issue for us to fix it or a PR with the fix. This includes, amoung meny others:
+- **Small100**: <https://huggingface.co/alirezamsh/small100>
+- **Mbart many-to-many / many-to-one**: <https://huggingface.co/facebook/mbart-large-50-many-to-many-mmt>
+- **Opus MT**: <Helsinki-NLP/opus-mt-es-en>
+
 
 
 ## Citation
@@ -113,7 +121,8 @@ pip install peft
 
 ## Translate a file
 
-Run `python translate.py -h` for more info.
+Run `python translate.py -h` for more info.   
+See [the examples folder](examples) for examples of how to run different models.
 
 #### Using a single CPU / GPU
 
@@ -156,11 +165,13 @@ pip install bitsandbytes
 
 python3 translate.py \
 --sentences_path sample_text/en.txt \
---output_path sample_text/en2es.translation.nllb-moe-54b.txt \
+--output_path sample_text/en2es.translation.nllb200-moe-54B.txt \
 --source_lang eng_Latn \
 --target_lang spa_Latn \
 --model_name facebook/nllb-moe-54b \
---precision 8 
+--precision 8 \
+--force_auto_device_map \
+--starting_batch_size 8
 ```
 
 If even the quantified model does not fit in your GPU memory, you can set the `--force_auto_device_map` flag. 
