@@ -84,6 +84,14 @@ def main(
 
     accelerator = Accelerator()
 
+    if force_auto_device_map and starting_batch_size >= 64:
+        print(
+            f"WARNING: You are using a very large batch size ({starting_batch_size}) and the auto_device_map  flag. "
+            f"auto_device_map will offload model parameters to the CPU when they don't fit on the GPU VRAM. "
+            f"If you use a very large batch size, it will offload a lot of parameters to the CPU and slow down the "
+            f"inference. You should consider using a smaller batch size, i.e '--starting_batch_size 8'"
+        )
+
     if precision is None:
         quantization = None
         dtype = None
