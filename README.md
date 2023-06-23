@@ -44,8 +44,8 @@ See the [Supported languages table](supported_languages.md) for a table of the s
 
 ## Supported Models
 
-💥 EasyTranslate now supports any Seq2SeqLM (m2m100, nllb200, small100, mbart, MarianMT, T5, FlanT5, etc.) and any CausalLM (GPT2, LLaMA, Vicuna, Falcon) model from HuggingFace's Hub!!
-We still recommend you to use M2M100 or NLLB200 for the best results, but you can experiment with other LLMs and prompting to generate translations. See [Prompting Section](#prompting) for more information. 
+💥 EasyTranslate now supports any Seq2SeqLM (m2m100, nllb200, small100, mbart, MarianMT, T5, FlanT5, etc.) and any CausalLM (GPT2, LLaMA, Vicuna, Falcon) model from  🤗 Hugging Face's Hub!!
+We still recommend you to use M2M100 or NLLB200 for the best results, but you can experiment with any other MT model, as well as prompting LLMs to generate translations (See [Prompting Section](#prompting) for more details). 
 You can also see [the examples folder](examples) for examples of how to use EasyTranslate with different models.
 
 ### M2M100
@@ -74,7 +74,7 @@ You can also see [the examples folder](examples) for examples of how to use Easy
 - **facebook/nllb-200-distilled-600M**: <https://huggingface.co/facebook/nllb-200-distilled-600M>
 
 ### Other MT Models supported
-We support every MT model in the 🤗 Hugging Face's Hub. If you find one that doesn't work, please open an issue for us to fix it or a PR with the fix. This includes, among many others:
+We support every MT model in the 🤗 Hugging Face's Hub. If you find a model that doesn't work, please open an issue for us to fix it or a PR with the fix. This includes, among many others:
 - **Small100**: <https://huggingface.co/alirezamsh/small100>
 - **Mbart many-to-many / many-to-one**: <https://huggingface.co/facebook/mbart-large-50-many-to-many-mmt>
 - **Opus MT**: <https://huggingface.co/Helsinki-NLP/opus-mt-es-en>
@@ -112,10 +112,10 @@ HuggingFace Transformers
 If you plan to use NLLB200, please use >= 4.28.0, as an important bug was fixed in this version. 
 pip install --upgrade transformers
 
-BitsAndBytes (Optional, for 8-bits / 4bits quantization)
+BitsAndBytes (Optional, required 8-bits / 4-bits quantization)
 pip install bitsandbytes
 
-PEFT (Optional, for LoRA models)
+PEFT (Optional, required for loading LoRA models)
 pip install peft
 ```
 
