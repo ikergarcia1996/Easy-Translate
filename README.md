@@ -112,7 +112,7 @@ HuggingFace Transformers
 If you plan to use NLLB200, please use >= 4.28.0, as an important bug was fixed in this version. 
 pip install --upgrade transformers
 
-BitsAndBytes (Optional, required 8-bits / 4-bits quantization)
+BitsAndBytes (Optional, required for 8-bits / 4-bits quantization)
 pip install bitsandbytes
 
 PEFT (Optional, required for loading LoRA models)
