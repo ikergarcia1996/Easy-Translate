@@ -117,6 +117,12 @@ pip install bitsandbytes
 
 PEFT (Optional, required for loading LoRA models)
 pip install peft
+
+Sentencepiece
+pip install sentencepiece
+
+TQDM (Displays progress bars)
+pip install tqdm
 ```
 
 ## Translate a file
