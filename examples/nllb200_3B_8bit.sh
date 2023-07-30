@@ -1,5 +1,8 @@
-# Run NLLB200-3B model on sample text. We use FP16 precision, which requires a GPU with a lot of VRAM
-# For running this model in GPUs with less VRAM, use 8-bit quantization, see examples/nllb200_3B_8bit.sh
+# Run  NLLB200-3B on sample text. This model requires a GPU with a lot of VRAM, so we use
+# 8-bit quantization to reduce the required VRAM so we can fit in customer grade GPUs. If you have a GPU
+# with a lot of RAM, running the model in FP16 should be faster and produce sighly better results,
+# see examples/nllb200-3B_fp16.sh
+
 
 python3 translate.py \
 --sentences_path sample_text/en.txt \
