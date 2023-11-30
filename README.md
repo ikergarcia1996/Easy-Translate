@@ -1,4 +1,3 @@
-
 <p align="center">
     <br>
     <img src="images/title.png" width="900"/>
@@ -29,23 +28,19 @@ We currently support:
 - BF16 / FP16 / FP32 / 8 Bits / 4 Bits precision.
 - Automatic batch size finder: Forget CUDA OOM errors. Set an initial batch size, if it doesn't fit, we will automatically adjust it.
 - Multiple decoding strategies: Greedy Search, Beam Search, Top-K Sampling, Top-p (nucleus) sampling, etc. See [Decoding Strategies](#decodingsampling-strategies) for more information.
-- :new: Load huge models in a single GPU with 8-bits / 4-bits quantization and support for splitting the model between GPU and CPU. See [Loading Huge Models](#loading-huge-models) for more information.
-- :new: LoRA models support 
-- :new: Support for any Seq2SeqLM or CausalLM model from HuggingFace's Hub.
-- :new: Prompt support! See [Prompting](#prompting) for more information.
+- Load huge models in a single GPU with 8-bits / 4-bits quantization and support for splitting the model between GPU and CPU. See [Loading Huge Models](#loading-huge-models) for more information.
+- LoRA models support 
+- Support for any Seq2SeqLM or CausalLM model from HuggingFace's Hub.
+- Prompt support! See [Prompting](#prompting) for more information.
+- :new: Add support for [SeamlessM4T](https://huggingface.co/docs/transformers/main/en/model_doc/seamless_m4t)! 
 
 >Test the 🔌 Online Demo here: <https://huggingface.co/spaces/Iker/Translate-100-languages>
 
 
-
-## Supported languages
-
-See the [Supported languages table](supported_languages.md) for a table of the supported languages and their ids.
-
 ## Supported Models
 
 💥 EasyTranslate now supports any Seq2SeqLM (m2m100, nllb200, small100, mbart, MarianMT, T5, FlanT5, etc.) and any CausalLM (GPT2, LLaMA, Vicuna, Falcon) model from  🤗 Hugging Face's Hub!!
-We still recommend you to use M2M100 or NLLB200 for the best results, but you can experiment with any other MT model, as well as prompting LLMs to generate translations (See [Prompting Section](#prompting) for more details). 
+We still recommend you to use M2M100, NLLB200 or SeamlessM4T for the best results, but you can experiment with any other MT model, as well as prompting LLMs to generate translations (See [Prompting Section](#prompting) for more details). 
 You can also see [the examples folder](examples) for examples of how to use EasyTranslate with different models.
 
 ### M2M100
@@ -73,13 +68,23 @@ You can also see [the examples folder](examples) for examples of how to use Easy
 
 - **facebook/nllb-200-distilled-600M**: <https://huggingface.co/facebook/nllb-200-distilled-600M>
 
+### SeamlessM4T
+
+**SeamlessM4T** a collection of models designed to provide high quality translation, allowing people from different linguistic communities to communicate effortlessly through speech and text. It was introduced in this [paper](https://dl.fbaipublicfiles.com/seamless/seamless_m4t_paper.pdf) and first released in [this](https://github.com/facebookresearch/seamless_communication) repository.
+>SeamlessM4T can directly translate between 196 Languages for text input/output.
+
+- **facebook/hf-seamless-m4t-medium**: <https://huggingface.co/facebook/hf-seamless-m4t-medium> (Requires transformers 4.35.0)
+
+- **facebook/hf-seamless-m4t-large**: <https://huggingface.co/facebook/hf-seamless-m4t-large> (Requires transformers 4.35.0)
+
+
 ### Other MT Models supported
 We support every MT model in the 🤗 Hugging Face's Hub. If you find a model that doesn't work, please open an issue for us to fix it or a PR with the fix. This includes, among many others:
 - **Small100**: <https://huggingface.co/alirezamsh/small100>
 - **Mbart many-to-many / many-to-one**: <https://huggingface.co/facebook/mbart-large-50-many-to-many-mmt>
 - **Opus MT**: <https://huggingface.co/Helsinki-NLP/opus-mt-es-en>
 
-
+See the [Supported languages table](supported_languages.md) for a table of the supported languages and their ids.
 
 ## Citation
 If you use this software please cite
@@ -110,6 +115,7 @@ pip install accelerate
 
 HuggingFace Transformers 
 If you plan to use NLLB200, please use >= 4.28.0, as an important bug was fixed in this version. 
+If you plan to use SeamlessM4T, please use >= 4.35.0. 
 pip install --upgrade transformers
 
 BitsAndBytes (Optional, required for 8-bits / 4-bits quantization)
@@ -130,6 +136,20 @@ See [the examples folder](examples) for examples of how to run different models.
 python3 translate.py \
 --sentences_path sample_text/en.txt \
 --output_path sample_text/en2es.translation.m2m100_1.2B.txt \
+--source_lang en \
+--target_lang es \
+--model_name facebook/m2m100_1.2B
+```
+
+If you want to translate all the files in a directory, use the `--sentences_dir` flag instead of `--sentences_path`.
+```bash
+# We use --files_extension txt to translate only files with this extension. 
+# Use empty string to translate all files in the directory
+
+python3 translate.py \
+--sentences_dir sample_text/ \
+--output_path sample_text/translations \
+--files_extension txt \
 --source_lang en \
 --target_lang es \
 --model_name facebook/m2m100_1.2B

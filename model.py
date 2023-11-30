@@ -14,8 +14,6 @@ from transformers.models.auto.modeling_auto import (
 
 from typing import Optional, Tuple
 
-import os
-
 import torch
 
 import json
@@ -27,6 +25,7 @@ def load_model_for_inference(
     lora_weights_name_or_path: Optional[str] = None,
     torch_dtype: Optional[str] = None,
     force_auto_device_map: bool = False,
+    trust_remote_code: bool = False,
 ) -> Tuple[PreTrainedModel, PreTrainedTokenizerBase]:
     """
     Load any Decoder model for inference.
@@ -50,6 +49,8 @@ def load_model_for_inference(
             Whether to force the use of the auto device map. If set to True, the model will be split across
             GPUs and CPU to fit the model in memory. If set to False, a full copy of the model will be loaded
             into each GPU. Defaults to False.
+        trust_remote_code (`bool`, optional):
+            Trust the remote code from HuggingFace model hub. Defaults to False.
 
     Returns:
         `Tuple[PreTrainedModel, PreTrainedTokenizerBase]`:
@@ -64,19 +65,8 @@ def load_model_for_inference(
 
     print(f"Loading model from {weights_path}")
 
-    MODEL_FOR_CAUSAL_LM_MAPPING_NAMES.update(
-        {
-            "mpt": "MPTForCausalLM",
-            "RefinedWebModel": "RWForCausalLM",
-            "RefinedWeb": "RWForCausalLM",
-        }
-    )  # MPT and Falcon are not in transformers yet
-
     config = AutoConfig.from_pretrained(
-        weights_path,
-        trust_remote_code=True
-        if ("mpt" in weights_path or "falcon" in weights_path)
-        else False,
+        weights_path, trust_remote_code=trust_remote_code
     )
 
     torch_dtype = (
@@ -84,20 +74,40 @@ def load_model_for_inference(
     )
 
     if "small100" in weights_path:
+        import transformers
+
+        if transformers.__version__ > "4.34.0":
+            raise ValueError(
+                "Small100 tokenizer is not supported in transformers > 4.34.0. Please "
+                "use transformers <= 4.34.0 if you want to use small100"
+            )
+
         print(f"Loading custom small100 tokenizer for utils.tokenization_small100")
         from utils.tokenization_small100 import SMALL100Tokenizer as AutoTokenizer
     else:
         from transformers import AutoTokenizer
 
     tokenizer: PreTrainedTokenizerBase = AutoTokenizer.from_pretrained(
-        weights_path,
-        add_eos_token=True,
-        trust_remote_code=True
-        if ("mpt" in weights_path or "falcon" in weights_path)
-        else False,
+        weights_path, add_eos_token=True, trust_remote_code=trust_remote_code
     )
 
+    if tokenizer.pad_token_id is None:
+        if "<|padding|>" in tokenizer.get_vocab():
+            # StabilityLM specific fix
+            tokenizer.add_special_tokens({"pad_token": "<|padding|>"})
+        elif tokenizer.unk_token is not None:
+            print(
+                "Tokenizer does not have a pad token, we will use the unk token as pad token."
+            )
+            tokenizer.pad_token_id = tokenizer.unk_token_id
+        else:
+            print(
+                "Tokenizer does not have a pad token. We will use the eos token as pad token."
+            )
+            tokenizer.pad_token_id = tokenizer.eos_token_id
+
     quant_args = {}
+
     if quantization is not None:
         quant_args = (
             {"load_in_4bit": True} if quantization == 4 else {"load_in_8bit": True}
@@ -107,16 +117,17 @@ def load_model_for_inference(
                 load_in_4bit=True,
                 bnb_4bit_use_double_quant=True,
                 bnb_4bit_quant_type="nf4",
-                bnb_4bit_compute_dtype=torch.bfloat16,
+                bnb_4bit_compute_dtype=torch.bfloat16
+                if torch_dtype in ["auto", None]
+                else torch_dtype,
             )
-            torch_dtype = torch.bfloat16
 
         else:
             bnb_config = BitsAndBytesConfig(
                 load_in_8bit=True,
             )
         print(
-            f"Bits and Bytes config: {json.dumps(bnb_config.to_dict(),indent=4,ensure_ascii=False)}"
+            f"Bits and Bytes config: {json.dumps(bnb_config.to_dict(), indent=4, ensure_ascii=False)}"
         )
     else:
         print(f"Loading model with dtype: {torch_dtype}")
@@ -131,6 +142,7 @@ def load_model_for_inference(
             device_map="auto" if force_auto_device_map else None,
             torch_dtype=torch_dtype,
             quantization_config=bnb_config,
+            trust_remote_code=trust_remote_code,
             **quant_args,
         )
 
@@ -142,9 +154,7 @@ def load_model_for_inference(
             pretrained_model_name_or_path=weights_path,
             device_map="auto" if force_auto_device_map else None,
             torch_dtype=torch_dtype,
-            trust_remote_code=True
-            if ("mpt" in weights_path or "falcon" in weights_path)
-            else False,
+            trust_remote_code=trust_remote_code,
             quantization_config=bnb_config,
             **quant_args,
         )
@@ -158,21 +168,6 @@ def load_model_for_inference(
             f"Seq2SeqLM: {MODEL_FOR_SEQ_TO_SEQ_CAUSAL_LM_MAPPING_NAMES}\n"
             f"CausalLM: {MODEL_FOR_CAUSAL_LM_MAPPING_NAMES}\n"
         )
-
-    if tokenizer.pad_token_id is None:
-        if "<|padding|>" in tokenizer.get_vocab():
-            # StableLM specific fix
-            tokenizer.add_special_tokens({"pad_token": "<|padding|>"})
-        elif tokenizer.unk_token is not None:
-            print(
-                "Model does not have a pad token, we will use the unk token as pad token."
-            )
-            tokenizer.pad_token_id = tokenizer.unk_token_id
-        else:
-            print(
-                "Model does not have a pad token. We will use the eos token as pad token."
-            )
-            tokenizer.pad_token_id = tokenizer.eos_token_id
 
     if lora_weights_name_or_path:
         from peft import PeftModel

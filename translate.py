@@ -1,6 +1,7 @@
 import os
 import math
 import argparse
+import glob
 
 import torch
 from torch.utils.data import DataLoader
@@ -18,6 +19,8 @@ from dataset import DatasetReader, count_lines
 
 from accelerate import Accelerator, DistributedType, find_executable_batch_size
 
+from typing import Optional
+
 
 def encode_string(text):
     return text.replace("\r", r"\r").replace("\n", r"\n").replace("\t", r"\t")
@@ -31,7 +34,12 @@ def get_dataloader(
     max_length: int,
     prompt: str,
 ) -> DataLoader:
-    dataset = DatasetReader(filename, tokenizer, max_length, prompt)
+    dataset = DatasetReader(
+        filename=filename,
+        tokenizer=tokenizer,
+        max_length=max_length,
+        prompt=prompt,
+    )
     if accelerator.distributed_type == DistributedType.TPU:
         data_collator = DataCollatorForSeq2Seq(
             tokenizer,
@@ -59,16 +67,18 @@ def get_dataloader(
 
 
 def main(
-    sentences_path: str,
+    sentences_path: Optional[str],
+    sentences_dir: Optional[str],
+    files_extension: str,
     output_path: str,
-    source_lang: str,
-    target_lang: str,
+    source_lang: Optional[str],
+    target_lang: Optional[str],
     starting_batch_size: int,
     model_name: str = "facebook/m2m100_1.2B",
     lora_weights_name_or_path: str = None,
     force_auto_device_map: bool = False,
     precision: str = None,
-    max_length: int = 128,
+    max_length: int = 256,
     num_beams: int = 4,
     num_return_sequences: int = 1,
     do_sample: bool = False,
@@ -79,9 +89,8 @@ def main(
     keep_tokenization_spaces: bool = False,
     repetition_penalty: float = None,
     prompt: str = None,
+    trust_remote_code: bool = False,
 ):
-    os.makedirs(os.path.abspath(os.path.dirname(output_path)), exist_ok=True)
-
     accelerator = Accelerator()
 
     if force_auto_device_map and starting_batch_size >= 64:
@@ -90,6 +99,16 @@ def main(
             f"auto_device_map will offload model parameters to the CPU when they don't fit on the GPU VRAM. "
             f"If you use a very large batch size, it will offload a lot of parameters to the CPU and slow down the "
             f"inference. You should consider using a smaller batch size, i.e '--starting_batch_size 8'"
+        )
+
+    if sentences_path is None and sentences_dir is None:
+        raise ValueError(
+            "You must specify either --sentences_path or --sentences_dir. Use --help for more details."
+        )
+
+    if sentences_path is not None and sentences_dir is not None:
+        raise ValueError(
+            "You must specify either --sentences_path or --sentences_dir, not both. Use --help for more details."
         )
 
     if precision is None:
@@ -118,11 +137,17 @@ def main(
         lora_weights_name_or_path=lora_weights_name_or_path,
         torch_dtype=dtype,
         force_auto_device_map=force_auto_device_map,
+        trust_remote_code=trust_remote_code,
     )
 
     is_translation_model = hasattr(tokenizer, "lang_code_to_id")
+    lang_code_to_idx = None
 
-    if is_translation_model and (source_lang is None or target_lang is None):
+    if (
+        is_translation_model
+        and (source_lang is None or target_lang is None)
+        and "small100" not in model_name
+    ):
         raise ValueError(
             f"The model you are using requires a source and target language. "
             f"Please specify them with --source-lang and --target-lang. "
@@ -169,8 +194,32 @@ def main(
             # We don't need to force the BOS token, so we set is_translation_model to False
             is_translation_model = False
 
+    if model.config.model_type == "seamless_m4t":
+        # Loading a seamless_m4t model, we need to set a few things to ensure compatibility
+
+        supported_langs = tokenizer.additional_special_tokens
+        supported_langs = [lang.replace("__", "") for lang in supported_langs]
+
+        if source_lang is None or target_lang is None:
+            raise ValueError(
+                f"The model you are using requires a source and target language. "
+                f"Please specify them with --source-lang and --target-lang. "
+                f"The supported languages are: {supported_langs}"
+            )
+
+        if source_lang not in supported_langs:
+            raise ValueError(
+                f"Language {source_lang} not found in tokenizer. Available languages: {supported_langs}"
+            )
+        if target_lang not in supported_langs:
+            raise ValueError(
+                f"Language {target_lang} not found in tokenizer. Available languages: {supported_langs}"
+            )
+
+        tokenizer.src_lang = source_lang
+
     gen_kwargs = {
-        "max_length": max_length,
+        "max_new_tokens": max_length,
         "num_beams": num_beams,
         "num_return_sequences": num_return_sequences,
         "do_sample": do_sample,
@@ -182,12 +231,17 @@ def main(
     if repetition_penalty is not None:
         gen_kwargs["repetition_penalty"] = repetition_penalty
 
-    total_lines: int = count_lines(sentences_path)
+    if is_translation_model:
+        gen_kwargs["forced_bos_token_id"] = lang_code_to_idx
+
+    if model.config.model_type == "seamless_m4t":
+        gen_kwargs["tgt_lang"] = target_lang
 
     if accelerator.is_main_process:
         print(
             f"** Translation **\n"
             f"Input file: {sentences_path}\n"
+            f"Sentences dir: {sentences_dir}\n"
             f"Output file: {output_path}\n"
             f"Source language: {source_lang}\n"
             f"Target language: {target_lang}\n"
@@ -211,10 +265,12 @@ def main(
         print("\n")
 
     @find_executable_batch_size(starting_batch_size=starting_batch_size)
-    def inference(batch_size):
-        nonlocal model, tokenizer, sentences_path, max_length, output_path, lang_code_to_idx, gen_kwargs, precision, prompt, is_translation_model
+    def inference(batch_size, sentences_path, output_path):
+        nonlocal model, tokenizer, max_length, gen_kwargs, precision, prompt, is_translation_model
 
-        print(f"Translating with batch size {batch_size}")
+        print(f"Translating {sentences_path} with batch size {batch_size}")
+
+        total_lines: int = count_lines(sentences_path)
 
         data_loader = get_dataloader(
             accelerator=accelerator,
@@ -243,9 +299,6 @@ def main(
 
                     generated_tokens = accelerator.unwrap_model(model).generate(
                         **batch,
-                        forced_bos_token_id=lang_code_to_idx
-                        if is_translation_model
-                        else None,
                         **gen_kwargs,
                     )
 
@@ -286,24 +339,60 @@ def main(
 
                     pbar.update(len(tgt_text) // gen_kwargs["num_return_sequences"])
 
-    inference()
+        print(f"Translation done. Output written to {output_path}\n")
+
+    if sentences_path is not None:
+        os.makedirs(os.path.abspath(os.path.dirname(output_path)), exist_ok=True)
+        inference(sentences_path=sentences_path, output_path=output_path)
+
+    if sentences_dir is not None:
+        print(
+            f"Translating all files in {sentences_dir}, with extension {files_extension}"
+        )
+        os.makedirs(os.path.abspath(output_path), exist_ok=True)
+        for filename in glob.glob(
+            os.path.join(
+                sentences_dir, f"*.{files_extension}" if files_extension else "*"
+            )
+        ):
+            output_filename = os.path.join(output_path, os.path.basename(filename))
+            inference(sentences_path=filename, output_path=output_filename)
+
     print(f"Translation done.\n")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the translation experiments")
-    parser.add_argument(
+    input_group = parser.add_mutually_exclusive_group(required=True)
+    input_group.add_argument(
         "--sentences_path",
+        default=None,
         type=str,
-        required=True,
         help="Path to a txt file containing the sentences to translate. One sentence per line.",
+    )
+
+    input_group.add_argument(
+        "--sentences_dir",
+        type=str,
+        default=None,
+        help="Path to a directory containing the sentences to translate. "
+        "Sentences must be in  .txt files containing containing one sentence per line.",
+    )
+
+    parser.add_argument(
+        "--files_extension",
+        type=str,
+        default="txt",
+        help="If sentences_dir is specified, extension of the files to translate. Defaults to txt. "
+        "If set to an empty string, we will translate all files in the directory.",
     )
 
     parser.add_argument(
         "--output_path",
         type=str,
         required=True,
-        help="Path to a txt file where the translated sentences will be written.",
+        help="Path to a txt file where the translated sentences will be written. If the input is a directory, "
+        "the output will be a directory with the same structure.",
     )
 
     parser.add_argument(
@@ -355,7 +444,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--max_length",
         type=int,
-        default=128,
+        default=256,
         help="Maximum number of tokens in the source sentence and generated sentence. "
         "Increase this value to translate longer sentences, at the cost of increasing memory usage.",
     )
@@ -438,10 +527,18 @@ if __name__ == "__main__":
         "It must include the special token %%SENTENCE%% which will be replaced by the sentence to translate.",
     )
 
+    parser.add_argument(
+        "--trust_remote_code",
+        action="store_true",
+        help="If set we will trust remote code in HuggingFace models. This is required for some models.",
+    )
+
     args = parser.parse_args()
 
     main(
         sentences_path=args.sentences_path,
+        sentences_dir=args.sentences_dir,
+        files_extension=args.files_extension,
         output_path=args.output_path,
         source_lang=args.source_lang,
         target_lang=args.target_lang,
@@ -459,4 +556,5 @@ if __name__ == "__main__":
         keep_tokenization_spaces=args.keep_tokenization_spaces,
         repetition_penalty=args.repetition_penalty,
         prompt=args.prompt,
+        trust_remote_code=args.trust_remote_code,
     )
