@@ -14,7 +14,7 @@
 
 Easy-Translate is a script for translating large text files with a 💥SINGLE COMMAND💥. Easy-Translate is designed to be as easy as possible for **beginners** and as **seamless** and **customizable** as possible for advanced users. 
 We support almost any model, including [M2M100](https://arxiv.org/pdf/2010.11125.pdf),
-[NLLB200](https://research.facebook.com/publications/no-language-left-behind/), 
+[NLLB200](https://research.facebook.com/publications/no-language-left-behind/), [SeamlessM4T](https://dl.fbaipublicfiles.com/seamless/seamless_m4t_paper.pdf),
 [LLaMA](https://ai.facebook.com/blog/large-language-model-llama-meta-ai/),
 [Bloom](https://bigscience.notion.site/BLOOM-BigScience-176B-Model-ad073ca07cdf479398d5f95d88e218c4) and more 🥳. 
 We also provide a [script](#evaluate-translations) for Easy-Evaluation of your translations 📋
@@ -39,7 +39,7 @@ We currently support:
 
 ## Supported Models
 
-💥 EasyTranslate now supports any Seq2SeqLM (m2m100, nllb200, small100, mbart, MarianMT, T5, FlanT5, etc.) and any CausalLM (GPT2, LLaMA, Vicuna, Falcon) model from  🤗 Hugging Face's Hub!!
+💥 EasyTranslate now supports any Seq2SeqLM (m2m100, nllb200, SeamlessM4T, small100, mbart, MarianMT, T5, FlanT5, etc.) and any CausalLM (GPT2, LLaMA, Vicuna, Falcon, etc.) model from  🤗 Hugging Face's Hub!!
 We still recommend you to use M2M100, NLLB200 or SeamlessM4T for the best results, but you can experiment with any other MT model, as well as prompting LLMs to generate translations (See [Prompting Section](#prompting) for more details). 
 You can also see [the examples folder](examples) for examples of how to use EasyTranslate with different models.
 
