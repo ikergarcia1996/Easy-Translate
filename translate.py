@@ -1,25 +1,20 @@
-import os
-import math
 import argparse
 import glob
+import math
+import os
+from typing import Optional
 
 import torch
+from accelerate import Accelerator, DistributedType, find_executable_batch_size
 from torch.utils.data import DataLoader
-
 from tqdm import tqdm
-
 from transformers import (
+    DataCollatorWithPadding,
     PreTrainedTokenizerBase,
-    DataCollatorForSeq2Seq,
 )
 
-from model import load_model_for_inference
-
 from dataset import DatasetReader, count_lines
-
-from accelerate import Accelerator, DistributedType, find_executable_batch_size
-
-from typing import Optional
+from model import load_model_for_inference
 
 
 def encode_string(text):
@@ -41,20 +36,20 @@ def get_dataloader(
         prompt=prompt,
     )
     if accelerator.distributed_type == DistributedType.TPU:
-        data_collator = DataCollatorForSeq2Seq(
+        data_collator = DataCollatorWithPadding(
             tokenizer,
             padding="max_length",
             max_length=max_length,
-            label_pad_token_id=tokenizer.pad_token_id,
+            # label_pad_token_id=tokenizer.pad_token_id,
             return_tensors="pt",
         )
     else:
-        data_collator = DataCollatorForSeq2Seq(
+        data_collator = DataCollatorWithPadding(
             tokenizer,
             padding=True,
-            label_pad_token_id=tokenizer.pad_token_id,
+            # label_pad_token_id=tokenizer.pad_token_id,
             # max_length=max_length, No need to set max_length here, we already truncate in the preprocess function
-            pad_to_multiple_of=8,
+            # pad_to_multiple_of=8,
             return_tensors="pt",
         )
 
@@ -266,7 +261,14 @@ def main(
 
     @find_executable_batch_size(starting_batch_size=starting_batch_size)
     def inference(batch_size, sentences_path, output_path):
-        nonlocal model, tokenizer, max_length, gen_kwargs, precision, prompt, is_translation_model
+        nonlocal \
+            model, \
+            tokenizer, \
+            max_length, \
+            gen_kwargs, \
+            precision, \
+            prompt, \
+            is_translation_model
 
         print(f"Translating {sentences_path} with batch size {batch_size}")
 
@@ -358,7 +360,7 @@ def main(
             output_filename = os.path.join(output_path, os.path.basename(filename))
             inference(sentences_path=filename, output_path=output_filename)
 
-    print(f"Translation done.\n")
+    print("Translation done.\n")
 
 
 if __name__ == "__main__":

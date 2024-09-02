@@ -57,7 +57,7 @@ def load_model_for_inference(
             The loaded model and tokenizer.
     """
 
-    if type(quantization) == str:
+    if isinstance(quantization,str):
         quantization = int(quantization)
     assert (quantization is None) or (
         quantization in [4, 8]
@@ -82,7 +82,7 @@ def load_model_for_inference(
                 "use transformers <= 4.34.0 if you want to use small100"
             )
 
-        print(f"Loading custom small100 tokenizer for utils.tokenization_small100")
+        print("Loading custom small100 tokenizer for utils.tokenization_small100")
         from utils.tokenization_small100 import SMALL100Tokenizer as AutoTokenizer
     else:
         from transformers import AutoTokenizer
