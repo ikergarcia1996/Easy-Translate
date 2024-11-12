@@ -35,7 +35,7 @@ def get_dataloader(
         max_length=max_length,
         prompt=prompt,
     )
-    if accelerator.distributed_type == DistributedType.TPU:
+    if accelerator.distributed_type == DistributedType.XLA:
         data_collator = DataCollatorWithPadding(
             tokenizer,
             padding="max_length",
